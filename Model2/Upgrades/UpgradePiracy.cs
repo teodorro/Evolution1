@@ -2,6 +2,9 @@
 {
     public class UpgradePiracy : UpgradeSingle
     {
-        
+        public UpgradePiracy()
+        {
+            UpgradeType = UpgradeType.Piracy;
+        }
     }
 }

@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Model;
 using Xunit;
 
-namespace TestModel2
+namespace TestModel
 {
     public class TestGame
     {

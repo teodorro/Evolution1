@@ -41,12 +41,12 @@ namespace Model.Upgrades
     }
 
 
-    public abstract class UpgradeCouple : Upgrade
+    public abstract class UpgradePair : Upgrade
     {
-        public Animal FirstAnimal { get; set; }
-        public Animal SecondAnimal { get; set; }
+        public Animal LeftAnimal { get; set; }
+        public Animal RightAnimal { get; set; }
 
-        public bool Equals(UpgradeCouple other)
+        public bool Equals(UpgradePair other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
@@ -58,7 +58,7 @@ namespace Model.Upgrades
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((UpgradeCouple)obj);
+            return Equals((UpgradePair)obj);
         }
 
         public override int GetHashCode()

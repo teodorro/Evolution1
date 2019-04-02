@@ -9,7 +9,7 @@ namespace Model
     public interface IPlayer
     {
         ReadOnlyCollection<Card> Cards { get; }
-        ReadOnlyCollection<Animal> Animals { get; }
+        AnimalCollection Animals { get; }
         ReadOnlyCollection<IPlayer> OtherPlayers { get; }
 
         void AddCard(Card card);
@@ -17,9 +17,9 @@ namespace Model
         void RemoveAnimal(Animal animal);
         void ChangeOrder(ObservableCollection<Animal> animals);
         void AddUpgrade(Animal animal, Card card, UpgradeSingle upgrade);
-        void AddUpgrade(Animal animalFirst, Animal animalSecond, Card card, UpgradeCouple upgrade);
+        void AddUpgrade(Animal animalFirst, Animal animalSecond, Card card, UpgradePair upgrade);
         bool CanBeUpgraded(Animal animal, UpgradeSingle upgrade);
-        bool CanBeUpgraded(Animal animalFirst, Animal animalSecond, UpgradeCouple upgrade);
+        bool CanBeUpgraded(Animal animalFirst, Animal animalSecond, UpgradePair upgrade);
         void AddParasite(IPlayer player, Card card);
         void Reset();
     }
@@ -29,11 +29,10 @@ namespace Model
     public class Player : IPlayer
     {
         private readonly List<Card> _cards = new List<Card>();
-        private readonly ObservableCollection<Animal> _animals = new ObservableCollection<Animal>();
         private readonly List<IPlayer> _players = new List<IPlayer>();
 
         public ReadOnlyCollection<Card> Cards => _cards.AsReadOnly();
-        public ReadOnlyCollection<Animal> Animals => _animals.ToList().AsReadOnly();
+        public AnimalCollection Animals { get; private set; }
         public ReadOnlyCollection<IPlayer> OtherPlayers { get; }
 
 
@@ -50,21 +49,31 @@ namespace Model
                 throw new NoCardsException();
             _cards.Remove(card);
             var animal = new Animal();
-            _animals.Add(animal);
+            //_animals.Add(animal);
             return animal;
         }
 
         public void RemoveAnimal(Animal animal)
         {
-            if (_animals.Contains(animal))
-                _animals.Remove(animal);
-            else
-                throw new PlayerAnimalIncostintenceException();
+//            if (_animals.Contains(animal))
+//                _animals.Remove(animal);
+//            else
+//                throw new PlayerAnimalIncostintenceException();
         }
 
         public void ChangeOrder(ObservableCollection<Animal> animals)
         {
             
+        }
+
+        public void AddUpgrade(Animal animal, Card card, UpgradeSingle upgrade)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddUpgrade(Animal animalFirst, Animal animalSecond, Card card, UpgradePair upgrade)
+        {
+            throw new NotImplementedException();
         }
 
         public void AddUpgrade(Animal animal, Card card, Upgrade upgrade)
@@ -94,6 +103,12 @@ namespace Model
             {
             }
 
+            return true;
+        }
+
+        public bool CanBeUpgraded(Animal animalFirst, Animal animalSecond, UpgradePair upgrade)
+        {
+            throw new NotImplementedException();
         }
 
         public void AddParasite(IPlayer player, Card card)
@@ -104,7 +119,7 @@ namespace Model
         public void Reset()
         {
             _cards.Clear();
-            _animals.Clear();
+//            _animals.Clear();
         }
 
     }

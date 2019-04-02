@@ -2,6 +2,9 @@
 {
     public class UpgradeScavanger : UpgradeSingle
     {
-        
+        public UpgradeScavanger()
+        {
+            UpgradeType = UpgradeType.Scavanger;
+        }
     }
 }

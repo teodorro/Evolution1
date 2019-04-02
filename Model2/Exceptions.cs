@@ -8,6 +8,8 @@ namespace Model
     public class AnimalUpgradeIncostintenceException : Exception { }
     public class NoCardsException : Exception { }
 
+    public class UpgradesIncompatibleException : Exception { }
+    public class AnimalNotFoundException : Exception { }
 
 
 

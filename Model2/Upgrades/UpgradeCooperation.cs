@@ -1,8 +1,6 @@
-﻿using Model.Upgrades;
-
-namespace Model
+﻿namespace Model.Upgrades
 {
-    public class UpgradeCooperation : UpgradeCouple
+    public class UpgradeCooperation : UpgradePair
     {
         public UpgradeCooperation()
         {
