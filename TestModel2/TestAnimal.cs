@@ -51,7 +51,7 @@ namespace TestModel
                         animal.AddUpgrade(new UpgradeRunning());
                         break;
                     case UpgradeType.Scavanger:
-                        animal.AddUpgrade(new UpgradeScavanger());
+                        animal.AddUpgrade(new UpgradeScavenger());
                         break;
                     case UpgradeType.SharpVision:
                         animal.AddUpgrade(new UpgradeSharpVision());
@@ -103,7 +103,7 @@ namespace TestModel
         {
             var animal = UpgradeAnimal(new Animal(), new List<UpgradeType>() { UpgradeType.Burrowing, UpgradeType.Carnivorous });
 
-            Assert.False(animal.CanBeUpgraded(new UpgradeScavanger()));
+            Assert.False(animal.CanBeUpgraded(new UpgradeScavenger()));
         }
 
         [Fact]

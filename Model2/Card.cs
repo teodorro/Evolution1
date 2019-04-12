@@ -3,7 +3,7 @@ using Model.Upgrades;
 
 namespace Model
 {
-    public class Card
+    public class Card : ObjectWithId
     {
         public Upgrade Upgrade1 { get; }
         public Upgrade Upgrade2 { get; }

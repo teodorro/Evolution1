@@ -1,8 +1,8 @@
 ﻿namespace Model.Upgrades
 {
-    public class UpgradeScavanger : UpgradeSingle
+    public class UpgradeScavenger : UpgradeSingle
     {
-        public UpgradeScavanger()
+        public UpgradeScavenger()
         {
             UpgradeType = UpgradeType.Scavanger;
         }

@@ -3,7 +3,7 @@
 namespace Model.Upgrades
 {
 
-    public abstract class Upgrade : IEquatable<Upgrade>
+    public abstract class Upgrade : ObjectWithId, IEquatable<Upgrade>
     {
         public string Name { get; protected set; }
         public bool AppliedInSingleCopy { get; protected set; } = true;
@@ -11,6 +11,7 @@ namespace Model.Upgrades
         public bool CanBeAppliedOtherPlayers { get; protected set; } = false;
         public bool CanBeAppliedThePlayer { get; protected set; } = true;
         public UpgradeType UpgradeType { get; protected set; }
+
 
 
         public bool Equals(Upgrade other)

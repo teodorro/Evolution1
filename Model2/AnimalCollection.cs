@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using Model.Upgrades;
 
 namespace Model
@@ -13,7 +14,7 @@ namespace Model
 
         Animal AddAnimal();
         void RemoveAnimal(Animal animal);
-        void Reset();
+        void Clear();
 
         bool CanBeUpgraded(Animal animal, UpgradeSingle upgrade);
         void AddUpgrade(Animal animal, UpgradeSingle upgrade);
@@ -21,8 +22,8 @@ namespace Model
         bool CanBeUpgraded(Animal animalLeft, UpgradePair upgrade);
         void AddUpgrade(Animal animalLeft, UpgradePair upgrade);
 
-        bool CanBeMovedToPosition(Animal animal, int position);
-        void SetNewPosition(Animal animal, int position);
+//        bool CanBeMovedToPosition(Animal animal, int position);
+        void SetNewPosition(Animal animal, int newPosition);
         int GetPosition(Animal animal);
     }
 
@@ -47,7 +48,7 @@ namespace Model
                 _animals.Remove(animal);
         }
 
-        public void Reset() => _animals.Clear();
+        public void Clear() => _animals.Clear();
 
 
         public bool CanBeUpgraded(Animal animal, UpgradeSingle upgrade)
@@ -87,30 +88,141 @@ namespace Model
         }
 
 
-        public bool CanBeMovedToPosition(Animal animal, int position)
+//        public bool CanBeMovedToPosition(Animal animal, int position)
+//        {
+////            if (animal == null)
+////                throw new ArgumentNullException();
+////            if (!_animals.Contains(animal))
+////                throw new AnimalNotFoundException();
+////            if (position < 0 || position >= Count)
+////                throw new ArgumentOutOfRangeException();
+////
+////            var animal2 = _animals[position];
+////            if (animal == animal2)
+////                return true;
+//            return false;
+//        }
+
+        public void SetNewPosition(Animal animal, int newPosition)
         {
             if (animal == null)
                 throw new ArgumentNullException();
             if (!_animals.Contains(animal))
                 throw new AnimalNotFoundException();
-            if (position < 0 || position >= Count)
+            if (newPosition < 0 || newPosition >= Count)
                 throw new ArgumentOutOfRangeException();
 
-            var animal2 = _animals[position];
+            var animal2 = _animals[newPosition];
             if (animal == animal2)
-                return true;
+                return;
 
-            throw new NotImplementedException();
+            var chains = GetChains();
+            var curChain = chains.First(x => x.Animals.Contains(animal));
+            var curPosition = curChain.Animals.IndexOf(animal) + curChain.Start;
+            var indCurChain = chains.IndexOf(curChain);
+
+            if (newPosition < curChain.Start && newPosition >= 0)
+            {
+                MoveChain(newPosition, chains, indCurChain);
+            }
+            else if (newPosition >= curChain.End && newPosition <= chains.Last().End)
+            {
+                MoveChain(newPosition, chains, indCurChain);
+            }
+            else if (newPosition >= curChain.Start && newPosition <= curChain.End
+                                                   && (curPosition >= curChain.Middle && newPosition < curChain.Middle
+                                                       || curPosition < curChain.Middle &&
+                                                       newPosition >= curChain.Middle))
+            {
+                InvertChain(curChain, chains);
+            }
+
 
         }
 
-        public void SetNewPosition(Animal animal, int position)
+        private void MoveChain(int newPosition, ObservableCollection<ChainOfAnimals> chains, int indCurChain)
         {
-            if (CanBeMovedToPosition(animal, position))
-                SetNewPosition(animal, position);
-            else
-                throw new ArgumentException("Unacceptable position");
+            var animalAtNewPos = _animals[newPosition];
+            var indChainNewPos = chains.IndexOf(chains.First(x => x.Animals.Contains(animalAtNewPos)));
+            chains.Move(indCurChain, indChainNewPos);
+            ConvertChainsToAnimals(chains);
         }
+        
+        private void InvertChain(ChainOfAnimals curChain, ObservableCollection<ChainOfAnimals> chains)
+        {
+            var animals = InvertAnimalsPositions(curChain);
+            InvertUpgradesLeftRight(animals);
+
+            curChain.Animals = animals;
+            ConvertChainsToAnimals(chains);
+        }
+
+        private void InvertUpgradesLeftRight(List<Animal> animals)
+        {
+            var pairUpgradesWithDups = animals.SelectMany(a => a.Upgrades)
+                .Where(u => u.GetType().IsSubclassOf(typeof(UpgradePair)));
+            var pairUpgrades = new List<Upgrade>();
+            foreach (var u in pairUpgradesWithDups)
+                if (pairUpgrades.All(x => x.Id != u.Id))
+                    pairUpgrades.Add(u);
+            foreach (var u in pairUpgrades)
+            {
+                var up = u as UpgradePair;
+                var r = up.RightAnimal;
+                up.RightAnimal = up.LeftAnimal;
+                up.LeftAnimal = r;
+            }
+        }
+
+        private List<Animal> InvertAnimalsPositions(ChainOfAnimals curChain)
+        {
+            var animals = new List<Animal>();
+            for (int i = curChain.Animals.Count - 1; i >= 0; i--)
+                animals.Add(curChain.Animals[i]);
+            return animals;
+        }
+
+
+        private ObservableCollection<ChainOfAnimals> GetChains()
+        {
+            var chains = new ObservableCollection<ChainOfAnimals>();
+
+            var j = 0;
+            for (int i = 0; i < Count; i++)
+            {
+                if (i < j)
+                    continue;
+                for (;;)
+                {
+                    var next = false;
+                    var a = _animals[j];
+                    if (a.Upgrades.Any(x => x.GetType().IsSubclassOf(typeof(UpgradePair))))
+                        foreach (var u in a.Upgrades.Where(x => x.GetType().IsSubclassOf(typeof(UpgradePair))))
+                            if ((u as UpgradePair).LeftAnimal == a)
+                            {
+                                next = true;
+                                break;
+                            }
+                    j++;
+                    if (!next)
+                        break;
+                }
+                chains.Add(new ChainOfAnimals(i, new List<Animal>()));
+                for (int k = i; k < j; k++)
+                    chains.Last().Animals.Add(_animals[k]);
+            }
+
+            return chains;
+        }
+
+        private void ConvertChainsToAnimals(ObservableCollection<ChainOfAnimals> chains)
+        {
+            _animals.Clear();
+            foreach (var chain in chains)
+                foreach (var animal in chain.Animals)
+                    _animals.Add(animal);
+        }
+
 
         public int GetPosition(Animal animal)
         {
@@ -133,5 +245,23 @@ namespace Model
         }
 
         public int Count => _animals.Count;
+    }
+
+
+
+    internal class ChainOfAnimals
+    {
+        public List<Animal> Animals { get; set; }
+
+        public double Middle => Start + ((double)Animals.Count) / 2;
+        public int Start { get; }
+        public int Length => Animals.Count;
+        public int End => Start + Animals.Count;
+
+        public ChainOfAnimals(int start, IEnumerable<Animal> animals)
+        {
+            Animals = animals.ToList();
+            Start = start;
+        }
     }
 }

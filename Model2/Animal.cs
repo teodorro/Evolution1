@@ -16,7 +16,7 @@ namespace Model
 
 
 
-    public class Animal : IAnimal
+    public class Animal : ObjectWithId, IAnimal
     {
         private readonly List<Upgrade> _upgrades = new List<Upgrade>();
         public ReadOnlyCollection<Upgrade> Upgrades => _upgrades.AsReadOnly();
@@ -31,9 +31,9 @@ namespace Model
                 case UpgradeFat f:
                     return true;
                 case UpgradeCarnivorous c:
-                    return _upgrades.All(x => x.GetType() != typeof(UpgradeCarnivorous) && x.GetType() != typeof(UpgradeScavanger));
-                case UpgradeScavanger s:
-                    return _upgrades.All(x => x.GetType() != typeof(UpgradeCarnivorous) && x.GetType() != typeof(UpgradeScavanger));
+                    return _upgrades.All(x => x.GetType() != typeof(UpgradeCarnivorous) && x.GetType() != typeof(UpgradeScavenger));
+                case UpgradeScavenger s:
+                    return _upgrades.All(x => x.GetType() != typeof(UpgradeCarnivorous) && x.GetType() != typeof(UpgradeScavenger));
                 default:
                     return _upgrades.All(x => x.GetType() != upgrade.GetType());
             }

@@ -18,7 +18,7 @@ namespace TestModel
             var player = new Player();
             c1 = new Card(new UpgradeCarnivorous(), new UpgradePoisonous());
             c2 = new Card(new UpgradeFat(), new UpgradeBurrowing());
-            c3 = new Card(new UpgradeFat(), new UpgradeScavanger());
+            c3 = new Card(new UpgradeFat(), new UpgradeScavenger());
             player.AddCard(c1);
             player.AddCard(c2);
             player.AddCard(c3);
@@ -30,9 +30,9 @@ namespace TestModel
             var player = new Player();
             c1 = new Card(new UpgradeCarnivorous(), new UpgradePoisonous());
             c2 = new Card(new UpgradeFat(), new UpgradeBurrowing());
-            c3 = new Card(new UpgradeFat(), new UpgradeScavanger());
-            c4 = new Card(new UpgradeCommunication(), new UpgradeScavanger());
-            c5 = new Card(new UpgradeCommunication(), new UpgradeScavanger());
+            c3 = new Card(new UpgradeFat(), new UpgradeScavenger());
+            c4 = new Card(new UpgradeCommunication(), new UpgradeScavenger());
+            c5 = new Card(new UpgradeCommunication(), new UpgradeScavenger());
             player.AddCard(c1);
             player.AddCard(c2);
             player.AddCard(c3);

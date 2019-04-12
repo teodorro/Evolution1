@@ -18,6 +18,21 @@ namespace TestModel
             return animals;
         }
 
+        private static AnimalCollection GetEightAnimals(out Animal a1, out Animal a2, out Animal a3, out Animal a4, 
+            out Animal a5, out Animal a6, out Animal a7, out Animal a8)
+        {
+            var animals = new AnimalCollection();
+            a1 = animals.AddAnimal();
+            a2 = animals.AddAnimal();
+            a3 = animals.AddAnimal();
+            a4 = animals.AddAnimal();
+            a5 = animals.AddAnimal();
+            a6 = animals.AddAnimal();
+            a7 = animals.AddAnimal();
+            a8 = animals.AddAnimal();
+            return animals;
+        }
+
 
 
         [Fact]
@@ -35,7 +50,7 @@ namespace TestModel
 
             animals.AddAnimal();
             animals.AddAnimal();
-            animals.Reset();
+            animals.Clear();
             Assert.Empty(animals.Animals);
         }
 
@@ -109,6 +124,7 @@ namespace TestModel
 
             Assert.Contains(a1.Upgrades, x => x.UpgradeType == UpgradeType.Communication);
             Assert.Contains(a2.Upgrades, x => x.UpgradeType == UpgradeType.Communication);
+            Assert.Equal(a1.Upgrades[0], a2.Upgrades[0]);
         }
 
         [Fact]
@@ -147,17 +163,17 @@ namespace TestModel
         }
         
 
-        [Fact]
-        public void TestCanBeMovedToPositionPlainErrors()
-        {
-            var animals = GetThreeAnimals(out var a1, out var a2, out var a3);
+//        [Fact]
+//        public void TestCanBeMovedToPositionPlainErrors()
+//        {
+//            var animals = GetThreeAnimals(out var a1, out var a2, out var a3);
+//
+//            Assert.Throws<ArgumentNullException>(() => animals.CanBeMovedToPosition(null, 1));
+//            Assert.Throws<AnimalNotFoundException>(() => animals.CanBeMovedToPosition(new Animal(), 1));
+//            Assert.Throws<ArgumentOutOfRangeException>(() => animals.CanBeMovedToPosition(a2, 3));
+//        }
 
-            Assert.Throws<ArgumentNullException>(() => animals.CanBeMovedToPosition(null, 1));
-            Assert.Throws<AnimalNotFoundException>(() => animals.CanBeMovedToPosition(new Animal(), 1));
-            Assert.Throws<ArgumentOutOfRangeException>(() => animals.CanBeMovedToPosition(a2, 3));
-        }
-
-        [Fact]
+        /*[Fact]
         public void TestCanBeMovedToPositionNoPairCards()
         {
             var animals = GetThreeAnimals(out var a1, out var a2, out var a3);
@@ -211,7 +227,137 @@ namespace TestModel
             animals.AddUpgrade(a3, new UpgradeCommunication());
 
             Assert.True(animals.CanBeMovedToPosition(a1, 2));
+        }*/
+
+        [Fact]
+        public void TestSetPositionSimple()
+        {
+            var animals = GetEightAnimals(out var a1, out var a2, out var a3, out var a4, out var a5, out var a6, out var a7, out var a8);
+
+            animals.SetNewPosition(a4, 1);
+            Assert.Equal(1, animals.GetPosition(a4));
+            Assert.Equal(2, animals.GetPosition(a2));
+            Assert.Equal(3, animals.GetPosition(a3));
+
+            animals.SetNewPosition(a4, 3);
+            Assert.Equal(3, animals.GetPosition(a4));
+            Assert.Equal(1, animals.GetPosition(a2));
+            Assert.Equal(2, animals.GetPosition(a3));
         }
+
+        [Fact]
+        public void TestSetPositionChainChainLeftNeighbors()
+        {
+            var animals = GetEightAnimals(out var a1, out var a2, out var a3, out var a4, out var a5, out var a6, out var a7, out var a8);
+            var c1 = new UpgradeCommunication();
+            var c2 = new UpgradeCommunication();
+            animals.AddUpgrade(a2, c1);
+            animals.AddUpgrade(a3, c2);
+
+            animals.SetNewPosition(a3, 0);
+
+            Assert.Equal(0, animals.GetPosition(a2));
+            Assert.Equal(1, animals.GetPosition(a3));
+            Assert.Equal(2, animals.GetPosition(a4));
+            Assert.Equal(a3, c2.LeftAnimal);
+            Assert.Equal(a2, c1.LeftAnimal);
+        }
+
+        [Fact]
+        public void TestSetPositionChainChainRightNeighbors()
+        {
+            var animals = GetEightAnimals(out var a1, out var a2, out var a3, out var a4, out var a5, out var a6, out var a7, out var a8);
+            var c1 = new UpgradeCommunication();
+            var c2 = new UpgradeCommunication();
+            animals.AddUpgrade(a2, c1);
+            animals.AddUpgrade(a3, c2);
+
+            animals.SetNewPosition(a2, 4);
+
+            Assert.Equal(2, animals.GetPosition(a2));
+            Assert.Equal(3, animals.GetPosition(a3));
+            Assert.Equal(4, animals.GetPosition(a4));
+            Assert.Equal(a3, c2.LeftAnimal);
+            Assert.Equal(a2, c1.LeftAnimal);
+        }
+
+        [Fact]
+        public void TestSetPositionChainChainLeftGap()
+        {
+            var animals = GetEightAnimals(out var a1, out var a2, out var a3, out var a4, out var a5, out var a6, out var a7, out var a8);
+            var c1 = new UpgradeCommunication();
+            var c2 = new UpgradeCommunication();
+            animals.AddUpgrade(a5, c1);
+            animals.AddUpgrade(a6, c2);
+
+            animals.SetNewPosition(a5, 1);
+
+            Assert.Equal(1, animals.GetPosition(a5));
+            Assert.Equal(2, animals.GetPosition(a6));
+            Assert.Equal(3, animals.GetPosition(a7));
+            Assert.Equal(a5, c1.LeftAnimal);
+            Assert.Equal(a6, c2.LeftAnimal);
+        }
+
+        [Fact]
+        public void TestSetPositionChainChainRightGap()
+        {
+            var animals = GetEightAnimals(out var a1, out var a2, out var a3, out var a4, out var a5, out var a6, out var a7, out var a8);
+            var c1 = new UpgradeCommunication();
+            var c2 = new UpgradeCommunication();
+            animals.AddUpgrade(a2, c1);
+            animals.AddUpgrade(a3, c2);
+
+            animals.SetNewPosition(a2, 6);
+
+            Assert.Equal(4, animals.GetPosition(a2));
+            Assert.Equal(5, animals.GetPosition(a3));
+            Assert.Equal(6, animals.GetPosition(a4));
+            Assert.Equal(a3, c2.LeftAnimal);
+            Assert.Equal(a2, c1.LeftAnimal);
+        }
+
+        [Fact]
+        public void TestSetPositionChainInvert2Animals()
+        {
+            var animals = GetEightAnimals(out var a1, out var a2, out var a3, out var a4, out var a5, out var a6, out var a7, out var a8);
+            animals.AddUpgrade(a2, new UpgradeCommunication());
+
+            animals.SetNewPosition(a2, 2);
+
+            Assert.Equal(2, animals.GetPosition(a2));
+            Assert.Equal(1, animals.GetPosition(a3));
+
+            animals.SetNewPosition(a2, 1);
+
+            Assert.Equal(1, animals.GetPosition(a2));
+            Assert.Equal(2, animals.GetPosition(a3));
+        }
+
+        [Fact]
+        public void TestSetPositionChainInvert3Animals()
+        {
+            var animals = GetEightAnimals(out var a1, out var a2, out var a3, out var a4, out var a5, out var a6, out var a7, out var a8);
+            var c1 = new UpgradeCommunication();
+            var c2 = new UpgradeCommunication();
+            animals.AddUpgrade(a2, c1);
+            animals.AddUpgrade(a3, c2);
+
+            animals.SetNewPosition(a2, 3);
+
+            Assert.Equal(3, animals.GetPosition(a2));
+            Assert.Equal(2, animals.GetPosition(a3));
+            Assert.Equal(1, animals.GetPosition(a4));
+            Assert.Equal(a4, c2.LeftAnimal);
+            Assert.Equal(a3, c1.LeftAnimal);
+
+            animals.SetNewPosition(a2, 1);
+
+            Assert.Equal(1, animals.GetPosition(a2));
+            Assert.Equal(2, animals.GetPosition(a3));
+            Assert.Equal(3, animals.GetPosition(a4));
+        }
+
 
         #endregion //Position
 
