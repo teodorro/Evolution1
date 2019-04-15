@@ -10,6 +10,7 @@ namespace Model
 
     public class UpgradesIncompatibleException : Exception { }
     public class AnimalNotFoundException : Exception { }
+    public class NoParasiteToYourAnimalsException : Exception { }
 
 
 

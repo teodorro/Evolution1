@@ -6,5 +6,7 @@
         {
             UpgradeType = UpgradeType.Scavanger;
         }
+
+        public override int AdditionalFoodNeeded => 0;
     }
 }

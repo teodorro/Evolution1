@@ -6,5 +6,7 @@
         {
             UpgradeType = UpgradeType.Symbiosys;
         }
+
+        public override int AdditionalFoodNeeded => 0;
     }
 }

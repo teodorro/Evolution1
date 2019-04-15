@@ -6,5 +6,7 @@
         {
             UpgradeType = UpgradeType.Swimming;
         }
+
+        public override int AdditionalFoodNeeded => 0;
     }
 }

@@ -6,5 +6,7 @@
         {
             UpgradeType = UpgradeType.SharpVision;
         }
+
+        public override int AdditionalFoodNeeded => 0;
     }
 }

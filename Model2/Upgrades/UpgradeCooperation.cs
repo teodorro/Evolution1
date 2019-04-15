@@ -6,5 +6,7 @@
         {
             UpgradeType = UpgradeType.Cooperation;
         }
+
+        public override int AdditionalFoodNeeded => 0;
     }
 }

@@ -6,5 +6,7 @@
         {
             UpgradeType = UpgradeType.TailLoss;
         }
+
+        public override int AdditionalFoodNeeded => 0;
     }
 }

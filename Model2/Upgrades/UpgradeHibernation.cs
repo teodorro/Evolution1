@@ -6,5 +6,7 @@
         {
             UpgradeType = UpgradeType.Hibernation;
         }
+
+        public override int AdditionalFoodNeeded => 0;
     }
 }

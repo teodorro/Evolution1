@@ -6,5 +6,7 @@
         {
             UpgradeType = UpgradeType.Grazing;
         }
+
+        public override int AdditionalFoodNeeded => 0;
     }
 }

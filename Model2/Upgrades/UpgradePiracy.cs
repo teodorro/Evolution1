@@ -6,5 +6,7 @@
         {
             UpgradeType = UpgradeType.Piracy;
         }
+
+        public override int AdditionalFoodNeeded => 0;
     }
 }

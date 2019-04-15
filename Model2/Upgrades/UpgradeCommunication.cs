@@ -6,5 +6,7 @@
         {
             UpgradeType = UpgradeType.Communication;
         }
+
+        public override int AdditionalFoodNeeded => 0;
     }
 }

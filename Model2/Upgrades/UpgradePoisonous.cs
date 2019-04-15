@@ -6,5 +6,7 @@
         {
             UpgradeType = UpgradeType.Parasite;
         }
+
+        public override int AdditionalFoodNeeded => 0;
     }
 }

@@ -7,5 +7,7 @@
             UpgradeType = UpgradeType.Fat;
             AppliedInSingleCopy = false;
         }
+
+        public override int AdditionalFoodNeeded => 0;
     }
 }

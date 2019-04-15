@@ -142,32 +142,15 @@ namespace TestModel
             Assert.Throws<UpgradesIncompatibleException>(() => animal.AddUpgrade(new UpgradeBurrowing()));
         }
 
+        [Fact]
+        public void TestFoodNeeded()
+        {
+            var animal = UpgradeAnimal(new Animal(), new List<UpgradeType>() { UpgradeType.Carnivorous, UpgradeType.Camouflage, UpgradeType.Parasite });
+
+            Assert.Equal(4, animal.FoodNeeded);
+        }
 
 
-//        [Fact]
-//        public void TestCanBeUpgradedPairSimple()
-//        {
-//            var animal = UpgradeAnimal(new Animal(), new List<UpgradeType>() { UpgradeType.Burrowing, UpgradeType.Camouflage });
-//            animal as Animal).AddUpgrade();
-//        }
-//
-//        [Fact]
-//        public void TestCanBeUpgradedPairNull()
-//        {
-//
-//        }
-//
-//        [Fact]
-//        public void TestCanBeUpgradedPairDupOk()
-//        {
-//
-//        }
-//
-//        [Fact]
-//        public void TestCanBeUpgradedPairDupWrong()
-//        {
-//
-//        }
 
     }
 }

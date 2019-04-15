@@ -8,5 +8,7 @@
             CanBeAppliedOtherPlayers = true;
             CanBeAppliedThePlayer = false;
         }
+
+        public override int AdditionalFoodNeeded => 2;
     }
 }

@@ -6,5 +6,7 @@
         {
             UpgradeType = UpgradeType.Carnivorous;
         }
+
+        public override int AdditionalFoodNeeded => 1;
     }
 }

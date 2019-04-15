@@ -6,5 +6,7 @@
         {
             UpgradeType = UpgradeType.Burrowing;
         }
+
+        public override int AdditionalFoodNeeded => 0;
     }
 }

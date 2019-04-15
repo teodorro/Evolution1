@@ -6,5 +6,7 @@
         {
             UpgradeType = UpgradeType.HighBodyWeight;
         }
+
+        public override int AdditionalFoodNeeded => 1;
     }
 }

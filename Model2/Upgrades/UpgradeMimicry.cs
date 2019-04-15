@@ -6,5 +6,7 @@
         {
             UpgradeType = UpgradeType.Mimicry;
         }
+
+        public override int AdditionalFoodNeeded => 0;
     }
 }

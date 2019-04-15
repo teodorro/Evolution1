@@ -9,6 +9,9 @@ namespace Model
     public interface IAnimal
     {
         ReadOnlyCollection<Upgrade> Upgrades { get; }
+        int FoodNeeded { get; }
+        int FoodGot { get; set; }
+
 
         bool CanBeUpgraded(UpgradeSingle upgrade);
         void AddUpgrade(UpgradeSingle upgrade);
@@ -20,6 +23,8 @@ namespace Model
     {
         private readonly List<Upgrade> _upgrades = new List<Upgrade>();
         public ReadOnlyCollection<Upgrade> Upgrades => _upgrades.AsReadOnly();
+        public int FoodNeeded => 1 + Upgrades.Select(x => x.AdditionalFoodNeeded).Sum();
+        public int FoodGot { get; set; } = 0;
 
         public bool CanBeUpgraded(UpgradeSingle upgrade)
         {
@@ -29,6 +34,8 @@ namespace Model
             switch (upgrade)
             {
                 case UpgradeFat f:
+                    return true;
+                case UpgradeParasite p:
                     return true;
                 case UpgradeCarnivorous c:
                     return _upgrades.All(x => x.GetType() != typeof(UpgradeCarnivorous) && x.GetType() != typeof(UpgradeScavenger));
@@ -73,6 +80,8 @@ namespace Model
                     upgrade.RightAnimal = this;
                 _upgrades.Add(upgrade);
             }
+            else
+                throw new UpgradesIncompatibleException();
         }
     }
 }

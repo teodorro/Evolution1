@@ -85,181 +85,57 @@ namespace TestModel
             Assert.Throws<NoCardsException>(() => player.AddAnimal(GetCardCarnivorousNull()));
         }
 
-//        [Fact]
-//        public void TestAddAnimal()
-//        {
-//            var player = new Player();
-//            player.AddCard(GetCardCarnivorousNull());
-//
-//            player.AddAnimal(player.Cards.First());
-//
-//            Assert.Single(player.Animals);
-//            Assert.Empty(player.Cards);
-//        }
-//
-//        [Fact]
-//        public void TestRemoveAnimal()
-//        {
-//            var player = new Player();
-//            player.AddCard(GetCardCarnivorousNull());
-//            player.AddAnimal(player.Cards.First());
-//
-//            player.RemoveAnimal(player.Animals.First());
-//
-//            Assert.Empty(player.Animals);
-//        }
-//
-//        [Fact]
-//        public void TestRemoveWrongAnimal()
-//        {
-//            var player = new Player();
-//            player.AddCard(GetCardCarnivorousNull());
-//            player.AddAnimal(player.Cards.First());
-//
-//            Assert.Throws<PlayerAnimalIncostintenceException>(() => player.RemoveAnimal(new Animal()));
-//            Assert.Throws<PlayerAnimalIncostintenceException>(() => player.RemoveAnimal(null));
-//        }
-//
-//        [Fact]
-//        public void TestAddUpgrade()
-//        {
-//            var player = new Player();
-//            player.AddCard(GetCardCarnivorousNull());
-//            player.AddCard(GetCardCarnivorousNull());
-//            player.AddAnimal(player.Cards.First());
-//
-//            var animal = player.Animals.First();
-//            var first = player.Cards.First();
-//            player.AddUpgrade(animal, first, first.Upgrade1);
-//
-//            Assert.Contains(first.Upgrade1, player.Animals.First().Upgrades);
-//        }
-//
-//        [Fact]
-//        public void TestAddUpgradeNull()
-//        {
-//            var player = new Player();
-//            player.AddCard(GetCardCarnivorousNull());
-//            player.AddCard(GetCardCarnivorousNull());
-//            player.AddAnimal(player.Cards.First());
-//
-//            var animal = player.Animals.First();
-//            var first = player.Cards.First();
-//
-//            Assert.Throws<ArgumentNullException>(() => player.AddUpgrade(animal, first, null));
-//            Assert.Throws<ArgumentNullException>(() => player.AddUpgrade(animal, null, first.Upgrade1));
-//            Assert.Throws<ArgumentNullException>(() => player.AddUpgrade(null, first, first.Upgrade1));
-//        }
-//
-//        [Fact]
-//        public void TestAddUpgradeWrongUpgr()
-//        {
-//            var player = new Player();
-//            player.AddCard(GetCardCarnivorousNull());
-//            player.AddCard(GetCardCarnivorousNull());
-//            player.AddAnimal(player.Cards.First());
-//
-//            var animal = player.Animals.First();
-//            var first = player.Cards.First();
-//
-//            Assert.Throws<CardUpgradeIncostintenceException>(() => player.AddUpgrade(animal, first, new UpgradeBurrowing()));
-//        }
-//
-//        [Fact]
-//        public void TestAddUpgradeUpgrDup()
-//        {
-//            var player = new Player();
-//            player.AddCard(GetCardCarnivorousNull());
-//            player.AddCard(GetCardCarnivorousNull());
-//            player.AddCard(GetCardCarnivorousNull());
-//
-//            var animal = player.AddAnimal(player.Cards.First());
-//            var first = player.Cards.First();
-//            
-//            player.AddUpgrade(animal, first, first.Upgrade1);
-//            Assert.Throws<AnimalUpgradeIncostintenceException>(() => player.AddUpgrade(animal, first, first.Upgrade1));
-//        }
-
-
-
-
         [Fact]
-        public void TestCanBeUpgradedSimple()
+        public void TestAddParasiteSimple()
         {
-            var player = GetPlayer1(out var c1, out var c2, out var c3);
+            TwoPlayers(out var player1, out var player2);
 
-            var animal = player.AddAnimal(c1);
-            player.AddUpgrade(animal, c2, c2.Upgrade2);
+            player1.AddParasite(player2, player2.Animals.First(), player1.Cards.First());
 
-            Assert.True(player.CanBeUpgraded(animal, c3.Upgrade1 as UpgradeSingle));
+            Assert.Contains(player2.Animals.First().Upgrades, x => x.UpgradeType == UpgradeType.Parasite);
+        }
+
+        private void TwoPlayers(out Player player1, out Player player2)
+        {
+            player1 = new Player();
+            player2 = new Player();
+            player1.AddCard(new Card(new UpgradeCarnivorous(), new UpgradeParasite()));
+            player1.AddCard(new Card(new UpgradeCarnivorous(), new UpgradeParasite()));
+            player2.AddCard(new Card(new UpgradeCarnivorous(), new UpgradeParasite()));
+            player1.AddAnimal(player1.Cards.First());
+            player2.AddAnimal(player2.Cards.First());
         }
 
         [Fact]
-        public void TestCanBeUpgradedFatTwice()
+        public void TestAddParasiteOwnAnimal()
         {
-            var player = GetPlayer1(out var c1, out var c2, out var c3);
+            TwoPlayers(out var player1, out var player2);
 
-            var animal = player.AddAnimal(c1);
-            player.AddUpgrade(animal, c2, c2.Upgrade1);
-
-            Assert.True(player.CanBeUpgraded(animal, c3.Upgrade1 as UpgradeSingle));
+            Assert.Throws<NoParasiteToYourAnimalsException>(() =>
+                player1.AddParasite(player1, player1.Animals.First(), player1.Cards.First()));
         }
 
         [Fact]
-        public void TestCanBeUpgradedParasite()
+        public void TestAddTwoParasites()
         {
-            var player = GetPlayer1(out var c1, out var c2, out var c3);
+            TwoPlayers(out var player1, out var player2);
+            player1.AddCard(new Card(new UpgradeCarnivorous(), new UpgradeParasite()));
 
-            var animal = player.AddAnimal(c1);
-            player.AddUpgrade(animal, c2, c2.Upgrade1);
+            player1.AddParasite(player2, player2.Animals.First(), player1.Cards.First());
+            player1.AddParasite(player2, player2.Animals.First(), player1.Cards.First());
 
-            Assert.False(player.CanBeUpgraded(animal, c3.Upgrade1 as UpgradeSingle));
+            Assert.Equal(2, player2.Animals.First().Upgrades.Count(x => x.UpgradeType == UpgradeType.Parasite));
         }
 
         [Fact]
-        public void TestCanBeUpgradedScavengerFalse()
+        public void TestAddParasiteWrongCard()
         {
-            var player = GetPlayer1(out var c1, out var c2, out var c3);
+            TwoPlayers(out var player1, out var player2);
+            player1.AddCard(new Card(new UpgradeCarnivorous(), new UpgradeBurrowing()));
 
-            var animal = player.AddAnimal(c2);
-            player.AddUpgrade(animal, c1, c1.Upgrade1);
-
-            Assert.False(player.CanBeUpgraded(animal, c3.Upgrade2 as UpgradeSingle));
+            Assert.Throws<CardUpgradeIncostintenceException>(() => 
+                player1.AddParasite(player2, player2.Animals.First(), player1.Cards.First(x => x.Upgrade1.UpgradeType != UpgradeType.Parasite && x.Upgrade2.UpgradeType != UpgradeType.Parasite)));
         }
 
-        [Fact]
-        public void TestCanBeUpgradedCarnivorousFalse()
-        {
-            var player = GetPlayer1(out var c1, out var c2, out var c3);
-
-            var animal = player.AddAnimal(c2);
-            player.AddUpgrade(animal, c3, c3.Upgrade2);
-
-            Assert.False(player.CanBeUpgraded(animal, c1.Upgrade1 as UpgradeSingle));
-        }
-
-//        [Fact]
-//        public void TestCanBeUpgradedPairTrue()
-//        {
-//            var player = GetPlayer2(out var c1, out var c2, out var c3, out var c4, out var c5);
-//
-//            var animal1 = player.AddAnimal(c1);
-//            var animal2 = player.AddAnimal(c1);
-//            player.AddUpgrade(animal, c3, c3.Upgrade2);
-//
-//            Assert.False(player.CanBeUpgraded(animal, c1.Upgrade1));
-//        }
-//
-//        [Fact]
-//        public void TestCanBeUpgradedPairDup()
-//        {
-//
-//        }
-//
-//        [Fact]
-//        public void TestCanBeUpgradedPairDistance()
-//        {
-//
-//        }
     }
 }

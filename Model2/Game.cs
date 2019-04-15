@@ -28,11 +28,6 @@ namespace Model
         }
 
 
-        public void NextTurn()
-        {
-
-        }
-
     }
 
 }

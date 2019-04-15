@@ -12,6 +12,8 @@ namespace Model.Upgrades
         public bool CanBeAppliedThePlayer { get; protected set; } = true;
         public UpgradeType UpgradeType { get; protected set; }
 
+        public abstract int AdditionalFoodNeeded { get; }
+
 
 
         public bool Equals(Upgrade other)
@@ -38,7 +40,6 @@ namespace Model.Upgrades
 
     public abstract class UpgradeSingle : Upgrade
     {
-
     }
 
 

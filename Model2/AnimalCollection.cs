@@ -87,22 +87,6 @@ namespace Model
                 throw new UpgradesIncompatibleException();
         }
 
-
-//        public bool CanBeMovedToPosition(Animal animal, int position)
-//        {
-////            if (animal == null)
-////                throw new ArgumentNullException();
-////            if (!_animals.Contains(animal))
-////                throw new AnimalNotFoundException();
-////            if (position < 0 || position >= Count)
-////                throw new ArgumentOutOfRangeException();
-////
-////            var animal2 = _animals[position];
-////            if (animal == animal2)
-////                return true;
-//            return false;
-//        }
-
         public void SetNewPosition(Animal animal, int newPosition)
         {
             if (animal == null)

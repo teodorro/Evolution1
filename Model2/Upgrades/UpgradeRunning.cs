@@ -6,5 +6,7 @@
         {
             UpgradeType = UpgradeType.Running;
         }
+
+        public override int AdditionalFoodNeeded => 0;
     }
 }
