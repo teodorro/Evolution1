@@ -10,11 +10,12 @@ namespace Model
     {
         ReadOnlyCollection<Upgrade> Upgrades { get; }
         int FoodNeeded { get; }
-        int FoodGot { get; set; }
-
-
+        int FoodGot { get; }
+        IPlayer Player { get; }
+        
         bool CanBeUpgraded(UpgradeSingle upgrade);
         void AddUpgrade(UpgradeSingle upgrade);
+        void AddFood(int foodPoints);
     }
 
 
@@ -24,8 +25,27 @@ namespace Model
         private readonly List<Upgrade> _upgrades = new List<Upgrade>();
         public ReadOnlyCollection<Upgrade> Upgrades => _upgrades.AsReadOnly();
         public int FoodNeeded => 1 + Upgrades.Select(x => x.AdditionalFoodNeeded).Sum();
-        public int FoodGot { get; set; } = 0;
+        public int FoodGot { get; private set; } = 0;
+        public IPlayer Player { get; }
 
+
+        public Animal(IPlayer player)
+        {
+            Player = player ?? throw new ArgumentNullException();
+        }
+
+
+        public void AddFood(int foodPoints)
+        {
+            if (foodPoints > 2 || foodPoints < 0)
+                throw new ArgumentException("impossible food points");
+            if (FoodGot == FoodNeeded)
+                throw new AnimalAlreadyFedException();
+            FoodGot += foodPoints;
+            if (FoodGot > FoodNeeded)
+                FoodGot = FoodNeeded;
+        }
+        
         public bool CanBeUpgraded(UpgradeSingle upgrade)
         {
             if (upgrade == null)
@@ -49,7 +69,10 @@ namespace Model
         public void AddUpgrade(UpgradeSingle upgrade)
         {
             if (CanBeUpgraded(upgrade))
+            {
                 _upgrades.Add(upgrade);
+                upgrade.Animal = this;
+            }
             else
                 throw new UpgradesIncompatibleException();
         }
@@ -83,5 +106,8 @@ namespace Model
             else
                 throw new UpgradesIncompatibleException();
         }
+
+
     }
+    
 }

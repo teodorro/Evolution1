@@ -9,9 +9,12 @@ namespace TestModel
 {
     public class TestAnimalCollection
     {
+        private static AnimalCollection GetAnimals() => new AnimalCollection(new Player("noname"));
+        private static Animal GetAnimal() => new Animal(new Player("noname"));
+
         private static AnimalCollection GetThreeAnimals(out Animal a1, out Animal a2, out Animal a3)
         {
-            var animals = new AnimalCollection();
+            var animals = GetAnimals();
             a1 = animals.AddAnimal();
             a2 = animals.AddAnimal();
             a3 = animals.AddAnimal();
@@ -21,7 +24,7 @@ namespace TestModel
         private static AnimalCollection GetEightAnimals(out Animal a1, out Animal a2, out Animal a3, out Animal a4, 
             out Animal a5, out Animal a6, out Animal a7, out Animal a8)
         {
-            var animals = new AnimalCollection();
+            var animals = GetAnimals();
             a1 = animals.AddAnimal();
             a2 = animals.AddAnimal();
             a3 = animals.AddAnimal();
@@ -38,14 +41,14 @@ namespace TestModel
         [Fact]
         public void TestAnimalsList()
         {
-            var animals = new AnimalCollection();
+            var animals = GetAnimals();
 
             animals.AddAnimal();
             Assert.Single(animals.Animals);
 
             animals.RemoveAnimal(animals.Animals.First());
             Assert.Empty(animals.Animals);
-            animals.RemoveAnimal(new Animal());
+            animals.RemoveAnimal(GetAnimal());
             Assert.Empty(animals.Animals);
 
             animals.AddAnimal();
@@ -81,7 +84,7 @@ namespace TestModel
         {
             var animals = GetThreeAnimals(out var a1, out var a2, out var a3);
 
-            Assert.Throws<AnimalNotFoundException>(() => animals.CanBeUpgraded(new Animal(), new UpgradeCommunication()));
+            Assert.Throws<AnimalNotFoundException>(() => animals.CanBeUpgraded(GetAnimal(), new UpgradeCommunication()));
         }
 
         [Fact]
@@ -159,7 +162,7 @@ namespace TestModel
 
             Assert.Equal(1, animals.GetPosition(a2));
             Assert.Throws<ArgumentNullException>(() => animals.GetPosition(null));
-            Assert.Throws<AnimalNotFoundException>(() => animals.GetPosition(new Animal()));
+            Assert.Throws<AnimalNotFoundException>(() => animals.GetPosition(GetAnimal()));
         }
         
         [Fact]

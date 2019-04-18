@@ -25,6 +25,15 @@ namespace Model
             return game;
         }
 
+        public Game GetTestGame(List<IPlayer> players, List<Card> cards)
+        {
+            foreach (var player in players)
+                player.Reset();
+            
+            var game = new Game(cards, players.ToList());
+
+            return game;
+        }
 
         private List<Card> MixCards(List<Card> cards)
         {
@@ -90,5 +99,8 @@ namespace Model
 
             return cards;
         }
+
+
+
     }
 }

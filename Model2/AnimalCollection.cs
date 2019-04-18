@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using Model.Upgrades;
 
 namespace Model
@@ -33,11 +32,18 @@ namespace Model
     {
         private readonly List<Animal> _animals = new List<Animal>();
         public ReadOnlyCollection<Animal> Animals => _animals.AsReadOnly();
+        private IPlayer _player;
 
-        
+
+        public AnimalCollection(IPlayer player)
+        {
+            _player = player ?? throw new ArgumentNullException();
+        }
+
+
         public Animal AddAnimal()
         {
-            var animal = new Animal();
+            var animal = new Animal(_player);
             _animals.Add(animal);
             return animal;
         }

@@ -3,7 +3,7 @@
 namespace Model.Upgrades
 {
 
-    public abstract class Upgrade : ObjectWithId, IEquatable<Upgrade>
+    public abstract class Upgrade : ObjectWithId
     {
         public string Name { get; protected set; }
         public bool AppliedInSingleCopy { get; protected set; } = true;
@@ -14,32 +14,18 @@ namespace Model.Upgrades
 
         public abstract int AdditionalFoodNeeded { get; }
 
-
-
-        public bool Equals(Upgrade other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return UpgradeType == other.UpgradeType;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((Upgrade) obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return (int) UpgradeType;
-        }
+        
     }
 
 
     public abstract class UpgradeSingle : Upgrade
     {
+        public Animal Animal { get; set; }
+    }
+
+    public interface IUsable
+    {
+        void Use();
     }
 
 
@@ -48,25 +34,6 @@ namespace Model.Upgrades
         public Animal LeftAnimal { get; set; }
         public Animal RightAnimal { get; set; }
 
-        public bool Equals(UpgradePair other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return UpgradeType == other.UpgradeType;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((UpgradePair)obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return (int)UpgradeType;
-        }
     }
 
 

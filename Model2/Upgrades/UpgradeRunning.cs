@@ -1,4 +1,6 @@
-﻿namespace Model.Upgrades
+﻿using System;
+
+namespace Model.Upgrades
 {
     public class UpgradeRunning : UpgradeSingle
     {
@@ -8,5 +10,10 @@
         }
 
         public override int AdditionalFoodNeeded => 0;
+
+        public int Use()
+        {
+            return new Random(DateTime.Now.Millisecond).Next(1, 6);
+        }
     }
 }

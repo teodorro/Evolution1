@@ -27,6 +27,7 @@ namespace Model
     {
         ReadOnlyCollection<Card> Cards { get; }
         AnimalCollection Animals { get; }
+        string Name { get; }
 
         void Reset();
 
@@ -42,7 +43,7 @@ namespace Model
         void Feed(Animal animal);
 //        void AttackAnimal(Animal carnivore, Animal victim);
         void UseUpgrade(Animal animal, UpgradeSingle upgrade);
-
+        void AddParasite(IPlayer player, Animal animal, Card card);
 
         void RemoveAnimal(Animal animal);
     }
@@ -54,9 +55,17 @@ namespace Model
         private readonly List<Card> _cards = new List<Card>();
 
         public ReadOnlyCollection<Card> Cards => _cards.AsReadOnly();
-        public AnimalCollection Animals { get; private set; } = new AnimalCollection();
-        
+        public AnimalCollection Animals { get; }
+        public string Name { get; }
+
         public event EventHandler<EventArgs> DevelopingStopped;
+
+
+        public Player(string name)
+        {
+            Animals = new AnimalCollection(this);
+            Name = name;
+        }
 
 
         public void AddCard(Card card)
@@ -111,7 +120,7 @@ namespace Model
             if (Animals.Contains(animal))
                 throw new NoParasiteToYourAnimalsException();
 
-            player.AddUpgrade(animal, card, new UpgradeParasite());
+            player.AddUpgrade(animal, card, (UpgradeSingle)(card.Upgrade1.UpgradeType == UpgradeType.Parasite ? card.Upgrade1 : card.Upgrade2));
             _cards.Remove(card);
         }
 
@@ -126,6 +135,7 @@ namespace Model
 
         public void Feed(Animal animal)
         {
+            
             throw new NotImplementedException();
         }
 
@@ -139,5 +149,11 @@ namespace Model
             throw new NotImplementedException();
         }
 
+
+
+        
     }
+
+
+
 }

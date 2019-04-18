@@ -10,42 +10,42 @@ namespace TestModel
     public class TestPlayer
     {
         private Card GetCardCarnivorousNull() => new Card(new UpgradeCarnivorous(), null);
-        
+        public static IPlayer GetPlayer() => new Player("noname");
 
 
-        private Player GetPlayer1(out Card c1, out Card c2, out Card c3)
-        {
-            var player = new Player();
-            c1 = new Card(new UpgradeCarnivorous(), new UpgradePoisonous());
-            c2 = new Card(new UpgradeFat(), new UpgradeBurrowing());
-            c3 = new Card(new UpgradeFat(), new UpgradeScavenger());
-            player.AddCard(c1);
-            player.AddCard(c2);
-            player.AddCard(c3);
-            return player;
-        }
-
-        private Player GetPlayer2(out Card c1, out Card c2, out Card c3, out Card c4, out Card c5)
-        {
-            var player = new Player();
-            c1 = new Card(new UpgradeCarnivorous(), new UpgradePoisonous());
-            c2 = new Card(new UpgradeFat(), new UpgradeBurrowing());
-            c3 = new Card(new UpgradeFat(), new UpgradeScavenger());
-            c4 = new Card(new UpgradeCommunication(), new UpgradeScavenger());
-            c5 = new Card(new UpgradeCommunication(), new UpgradeScavenger());
-            player.AddCard(c1);
-            player.AddCard(c2);
-            player.AddCard(c3);
-            player.AddCard(c4);
-            player.AddCard(c5);
-            return player;
-        }
+//        private Player GetPlayer1(out Card c1, out Card c2, out Card c3)
+//        {
+//            var player = new Player(null);
+//            c1 = new Card(new UpgradeCarnivorous(), new UpgradePoisonous());
+//            c2 = new Card(new UpgradeFat(), new UpgradeBurrowing());
+//            c3 = new Card(new UpgradeFat(), new UpgradeScavenger());
+//            player.AddCard(c1);
+//            player.AddCard(c2);
+//            player.AddCard(c3);
+//            return player;
+//        }
+//
+//        private Player GetPlayer2(out Card c1, out Card c2, out Card c3, out Card c4, out Card c5)
+//        {
+//            var player = new Player(null);
+//            c1 = new Card(new UpgradeCarnivorous(), new UpgradePoisonous());
+//            c2 = new Card(new UpgradeFat(), new UpgradeBurrowing());
+//            c3 = new Card(new UpgradeFat(), new UpgradeScavenger());
+//            c4 = new Card(new UpgradeCommunication(), new UpgradeScavenger());
+//            c5 = new Card(new UpgradeCommunication(), new UpgradeScavenger());
+//            player.AddCard(c1);
+//            player.AddCard(c2);
+//            player.AddCard(c3);
+//            player.AddCard(c4);
+//            player.AddCard(c5);
+//            return player;
+//        }
 
 
         [Fact]
         public void TestPlayerSomeCards()
         {
-            var player = new Player();
+            var player = GetPlayer();
 
             player.AddCard(GetCardCarnivorousNull());
 
@@ -55,7 +55,7 @@ namespace TestModel
         [Fact]
         public void TestPlayerNoCards()
         {
-            var player = new Player();
+            var player = GetPlayer();
 
             Assert.Throws<ArgumentNullException>(() => player.AddCard(null));
         }
@@ -63,8 +63,8 @@ namespace TestModel
         [Fact]
         public void TestAddCard()
         {
-            var player = new Player();
-            
+            var player = GetPlayer();
+
             player.AddCard(GetCardCarnivorousNull());
 
             Assert.Single(player.Cards);
@@ -73,7 +73,7 @@ namespace TestModel
         [Fact]
         public void TestAddCardNull()
         {
-            var player = new Player();
+            var player = GetPlayer();
 
             Assert.Throws<ArgumentNullException>(() => player.AddCard(null));
         }
@@ -81,7 +81,7 @@ namespace TestModel
         [Fact]
         public void TestAddAnimalNoCards()
         {
-            var player = new Player();
+            var player = GetPlayer();
             Assert.Throws<NoCardsException>(() => player.AddAnimal(GetCardCarnivorousNull()));
         }
 
@@ -95,10 +95,10 @@ namespace TestModel
             Assert.Contains(player2.Animals.First().Upgrades, x => x.UpgradeType == UpgradeType.Parasite);
         }
 
-        private void TwoPlayers(out Player player1, out Player player2)
+        private void TwoPlayers(out IPlayer player1, out IPlayer player2)
         {
-            player1 = new Player();
-            player2 = new Player();
+            player1 = GetPlayer();
+            player2 = GetPlayer();
             player1.AddCard(new Card(new UpgradeCarnivorous(), new UpgradeParasite()));
             player1.AddCard(new Card(new UpgradeCarnivorous(), new UpgradeParasite()));
             player2.AddCard(new Card(new UpgradeCarnivorous(), new UpgradeParasite()));

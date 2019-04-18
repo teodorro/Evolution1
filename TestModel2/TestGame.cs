@@ -11,7 +11,7 @@ namespace TestModel
         [Fact]
         public void TestGameCreate()
         {
-            var players = new List<IPlayer>() {new Player()};
+            var players = new List<IPlayer>() {new Player("noname")};
             var game = GameFactory.Instance.GetGame(players);
 
             Assert.NotEmpty(game.CardsRemain);
@@ -22,9 +22,9 @@ namespace TestModel
         /// Actually works not always
         /// </summary>
         [Fact]
-        public void TestMixedCards()
+        public void TestCardsMixed()
         {
-            var players = new List<IPlayer>() { new Player() };
+            var players = new List<IPlayer>() { new Player("noname") };
             var game1 = GameFactory.Instance.GetGame(players);
             Task.Delay(25).Wait();
             var game2 = GameFactory.Instance.GetGame(players);
