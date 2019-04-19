@@ -11,7 +11,7 @@ namespace Model
 
         public Card(Upgrade upgrade1, Upgrade upgrade2)
         {
-            Upgrade1 = upgrade1 ?? throw new ArgumentNullException("upgrade1 == null");
+            Upgrade1 = upgrade1 ?? throw new ArgumentNullException(nameof(upgrade1) + " == null");
             Upgrade2 = upgrade2;
         }
     }

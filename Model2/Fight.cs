@@ -5,7 +5,16 @@ using Model.Upgrades;
 
 namespace Model
 {
-    public class Fight
+    public interface IFight
+    {
+        void Start(Animal victim);
+        void Cancel();
+        event DefenceChooseHandler DefenceChoose;
+        event FightOverHandler FightOver;
+    }
+
+
+    public class Fight : IFight
     {
         private Animal _attacker;
         private Animal _victim;
@@ -42,22 +51,26 @@ namespace Model
                 FightOver?.Invoke(this, new FightOverEventArgs(this, true));
             }
         }
+
+        public void Cancel()
+        {
+        }
         
 
 
 
-        private void TestOnAttackChoose(object sender, DefenceChooseEventArgs args)
-        {
-            var canUse = args.Fight.DefenceCardsUsed.Where(x => !x.Value);
-            var toUse = canUse.First().Key;
-
-            switch (toUse.UpgradeType)
-            {
-                case UpgradeType.TailLoss:
-                    (toUse as UpgradeTailLoss).Use();
-                    break;
-            }
-        }
+//        private void TestOnAttackChoose(object sender, DefenceChooseEventArgs args)
+//        {
+//            var canUse = args.Fight.DefenceCardsUsed.Where(x => !x.Value);
+//            var toUse = canUse.First().Key;
+//
+//            switch (toUse.UpgradeType)
+//            {
+//                case UpgradeType.TailLoss:
+//                    (toUse as UpgradeTailLoss).Use();
+//                    break;
+//            }
+//        }
 
     }
 
