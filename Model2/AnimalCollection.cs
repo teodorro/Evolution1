@@ -21,6 +21,8 @@ namespace Model
         bool CanBeUpgraded(Animal animalLeft, UpgradePair upgrade);
         void AddUpgrade(Animal animalLeft, UpgradePair upgrade);
 
+        void RemoveUpgrade(Animal animalLeft, UpgradePair upgrade);
+
 //        bool CanBeMovedToPosition(Animal animal, int position);
         void SetNewPosition(Animal animal, int newPosition);
         int GetPosition(Animal animal);
@@ -33,6 +35,8 @@ namespace Model
         private readonly List<Animal> _animals = new List<Animal>();
         public ReadOnlyCollection<Animal> Animals => _animals.AsReadOnly();
         private IPlayer _player;
+        private Animal NextAnimal(Animal animal) => _animals[_animals.IndexOf(animal) + 1];
+        private Animal PreviousAnimal(Animal animal) => _animals[_animals.IndexOf(animal) - 1];
 
 
         public AnimalCollection(IPlayer player)
@@ -50,6 +54,19 @@ namespace Model
 
         public void RemoveAnimal(Animal animal)
         {
+            if (animal.Upgrades.Any(x => x.GetType().IsSubclassOf(typeof(UpgradePair))))
+            {
+                var pairUpgrades = animal.Upgrades.Where(x => x.GetType().IsSubclassOf(typeof(UpgradePair))).ToList();
+                foreach (var upgr in pairUpgrades)
+                {
+                    var u = upgr as UpgradePair;
+                    if (u.LeftAnimal == animal)
+                        NextAnimal(animal).RemoveUpgrade(u);
+                    else if (u.RightAnimal == animal)
+                        PreviousAnimal(animal).RemoveUpgrade(u);
+                    animal.RemoveUpgrade(u);
+                }
+            }
             if (_animals.Contains(animal))
                 _animals.Remove(animal);
         }
@@ -87,10 +104,19 @@ namespace Model
             if (CanBeUpgraded(animalLeft, upgrade))
             {
                 animalLeft.AddUpgrade(upgrade, true);
-                _animals[GetPosition(animalLeft) + 1].AddUpgrade(upgrade, false);
+                NextAnimal(animalLeft).AddUpgrade(upgrade, false);
             }
             else
                 throw new UpgradesIncompatibleException();
+        }
+
+        public void RemoveUpgrade(Animal animalLeft, UpgradePair upgrade)
+        {
+            if (animalLeft == null || upgrade == null)
+                throw new ArgumentNullException();
+
+            animalLeft.RemoveUpgrade(upgrade);
+            NextAnimal(animalLeft).RemoveUpgrade(upgrade);
         }
 
         public void SetNewPosition(Animal animal, int newPosition)

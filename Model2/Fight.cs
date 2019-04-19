@@ -42,18 +42,7 @@ namespace Model
                 FightOver?.Invoke(this, new FightOverEventArgs(this, true));
             }
         }
-
-//        public void ContinueFight(Upgrade upgrade)
-//        {
-//            if (DefenceCardsUsed.Count(x => !x.Value) > 0)
-//                ChooseDefence();
-//            else
-//                FightFinished();
-//        }
-
-
-
-
+        
 
 
 
@@ -77,11 +66,8 @@ namespace Model
 
     public class VictimChooseEventArgs : EventArgs
     {
-//        public Animal Attacker { get; private set; }
-//        public List<IPlayer> Players { get; private set; }
         public Fight Fight { get; set; }
 
-        //        public VictimChooseEventArgs(Animal attacker, List<IPlayer> _players)
         public VictimChooseEventArgs(Fight fight)
         {
             Fight = fight;

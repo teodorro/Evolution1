@@ -15,6 +15,7 @@ namespace Model
         
         bool CanBeUpgraded(UpgradeSingle upgrade);
         void AddUpgrade(UpgradeSingle upgrade);
+        void RemoveUpgrade(UpgradeSingle upgrade);
         void AddFood(int foodPoints);
     }
 
@@ -34,6 +35,11 @@ namespace Model
             Player = player ?? throw new ArgumentNullException();
         }
 
+
+        public void RemoveUpgrade(UpgradeSingle upgrade)
+        {
+            throw new NotImplementedException();
+        }
 
         public void AddFood(int foodPoints)
         {
@@ -105,6 +111,12 @@ namespace Model
             }
             else
                 throw new UpgradesIncompatibleException();
+        }
+
+        internal void RemoveUpgrade(UpgradePair upgrade)
+        {
+            if (_upgrades.Contains(upgrade))
+                _upgrades.Remove(upgrade);
         }
 
 

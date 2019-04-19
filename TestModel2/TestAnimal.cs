@@ -165,7 +165,26 @@ namespace TestModel
             Assert.Throws<AnimalAlreadyFedException>(() => animal.AddFood(1));
         }
 
+        [Fact]
+        public void RemoveUpgradeNull()
+        {
+            var animal = UpgradeAnimal(GetAnimal(), new List<UpgradeType>() { UpgradeType.Carnivorous, UpgradeType.Camouflage, UpgradeType.Parasite });
 
+            animal.RemoveUpgrade(null);
+
+            Assert.Throws<ArgumentNullException>(() => animal.RemoveUpgrade(null));
+        }
+
+        [Fact]
+        public void RemoveUpgradeSimple()
+        {
+            var animal = UpgradeAnimal(GetAnimal(), new List<UpgradeType>() { UpgradeType.Carnivorous, UpgradeType.Camouflage, UpgradeType.Parasite });
+            var upgrade = animal.Upgrades.First(x => x.UpgradeType == UpgradeType.Camouflage) as UpgradeSingle;
+
+            animal.RemoveUpgrade(upgrade);
+
+            Assert.DoesNotContain(upgrade, animal.Upgrades);
+        }
 
     }
 }

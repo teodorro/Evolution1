@@ -294,6 +294,57 @@ namespace TestModel
             Assert.Equal(3, animals.GetPosition(a4));
         }
 
+        [Fact]
+        public void TestRemoveAnimalSimple()
+        {
+            var animals = GetThreeAnimals(out var a1, out var a2, out var a3);
+
+            animals.RemoveAnimal(a1);
+
+            Assert.DoesNotContain(a1, animals);
+        }
+
+        [Fact]
+        public void TestRemoveAnimalPairUpgrade()
+        {
+            var animals = GetThreeAnimals(out var a1, out var a2, out var a3);
+            animals.AddUpgrade(a1, new UpgradeCommunication());
+            animals.AddUpgrade(a2, new UpgradeCommunication());
+            animals.AddUpgrade(a2, new UpgradeCooperation());
+
+            animals.RemoveAnimal(a2);
+
+            Assert.DoesNotContain(a2, animals);
+            Assert.Empty(a1.Upgrades);
+            Assert.Empty(a3.Upgrades);
+        }
+
+        [Fact]
+        public void TestRemovePairUpgradeNull()
+        {
+            var animals = GetThreeAnimals(out var a1, out var a2, out var a3);
+            var u1 = new UpgradeCommunication();
+            animals.AddUpgrade(a1, u1);
+            animals.AddUpgrade(a2, new UpgradeCommunication());
+            
+            Assert.Throws<ArgumentNullException>(() => animals.RemoveUpgrade(null, u1));
+            Assert.Throws<ArgumentNullException>(() => animals.RemoveUpgrade(a1, null));
+        }
+
+        [Fact]
+        public void TestRemovePairUpgrade()
+        {
+            var animals = GetThreeAnimals(out var a1, out var a2, out var a3);
+            var u1 = new UpgradeCommunication();
+            animals.AddUpgrade(a1, u1);
+            animals.AddUpgrade(a2, new UpgradeCommunication());
+
+            animals.RemoveUpgrade(a1, u1);
+
+            Assert.DoesNotContain(u1, a1.Upgrades);
+            Assert.DoesNotContain(u1, a2.Upgrades);
+        }
+
 
         #endregion //Position
 
