@@ -38,7 +38,10 @@ namespace Model
 
         public void RemoveUpgrade(UpgradeSingle upgrade)
         {
-            throw new NotImplementedException();
+            if (upgrade == null)
+                throw new ArgumentNullException();
+            if (_upgrades.Contains(upgrade))
+                _upgrades.Remove(upgrade);
         }
 
         public void AddFood(int foodPoints)

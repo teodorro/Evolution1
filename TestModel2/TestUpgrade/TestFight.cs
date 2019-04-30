@@ -56,9 +56,20 @@ namespace TestModel.TestUpgrade
         [Fact]
         public void TestStartSimple()
         {
+            ArrangeTwoAnimals(
+                out var player1, 
+                new List<UpgradeSingle>() { new UpgradeCarnivorous() }, 
+                out var player2, 
+                new List<UpgradeSingle>());
+            var fight = new Fight(player1.Animals.First(), new List<IPlayer>() {player1, player2});
 
-            var attacker = new Animal();
-            var fight = new Fight()
+            fight.FightOver += (sender, args) => { Assert.True(args.Killed); };
+
+            fight.Start(player2.Animals.First());
         }
+
+        
+
+
     }
 }

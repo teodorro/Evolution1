@@ -170,8 +170,6 @@ namespace TestModel
         {
             var animal = UpgradeAnimal(GetAnimal(), new List<UpgradeType>() { UpgradeType.Carnivorous, UpgradeType.Camouflage, UpgradeType.Parasite });
 
-            animal.RemoveUpgrade(null);
-
             Assert.Throws<ArgumentNullException>(() => animal.RemoveUpgrade(null));
         }
 
@@ -185,6 +183,18 @@ namespace TestModel
 
             Assert.DoesNotContain(upgrade, animal.Upgrades);
         }
+
+        [Fact]
+        public void RemoveUpgradeSimple2()
+        {
+            var animal = UpgradeAnimal(GetAnimal(), new List<UpgradeType>() { UpgradeType.Carnivorous, UpgradeType.Camouflage, UpgradeType.Parasite });
+            var upgrade = new UpgradeFat();
+
+            animal.RemoveUpgrade(upgrade);
+
+            Assert.DoesNotContain(upgrade, animal.Upgrades);
+        }
+
 
     }
 }

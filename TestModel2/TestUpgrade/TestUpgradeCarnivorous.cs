@@ -13,19 +13,6 @@ namespace TestModel.TestUpgrade
         private Animal _victim;
         private Game _game;
 
-        [Fact]
-        public void TestCarnivorousSimple()
-        {
-            ArrangeTwoAnimals(out var player1, new List<UpgradeSingle>(){new UpgradeCarnivorous()}, out var player2, new List<UpgradeSingle>());
-            _victim = player2.Animals.First();
-            _game.VictimChoose += OnVictimChoose;
-
-            (player1.Animals.First().Upgrades.First(x => x.UpgradeType == UpgradeType.Carnivorous) as UpgradeCarnivorous).Use();
-
-            Assert.Empty(player2.Animals);
-            Assert.Equal(2, player1.Animals.First().FoodGot);
-
-        }
 
         private void ArrangeTwoAnimals(out Player player1, List<UpgradeSingle> upgrades1, out Player player2, List<UpgradeSingle> upgrades2)
         {
@@ -63,15 +50,30 @@ namespace TestModel.TestUpgrade
                 player2.AddUpgrade(player2.Animals.First(), player2.Cards.First(), player2.Cards.First().Upgrade1 as UpgradeSingle);
             }
             i += upgrades2.Count;
-
         }
 
         private void OnVictimChoose(object sender, VictimChooseEventArgs args)
         {
             if (AttackPossibilityChecker.Instance.CanAttack(args.Fight.Attacker, _victim))
-            {
                 args.Fight.Start(_victim);
-            }
+        }
+
+
+        [Fact]
+        public void TestCarnivorousSimple()
+        {
+            ArrangeTwoAnimals(
+                out var player1,
+                new List<UpgradeSingle>() { new UpgradeCarnivorous() },
+                out var player2,
+                new List<UpgradeSingle>());
+            _victim = player2.Animals.First();
+            _game.VictimChoose += OnVictimChoose;
+
+            (player1.Animals.First().Upgrades.First(x => x.UpgradeType == UpgradeType.Carnivorous) as UpgradeCarnivorous).Use();
+
+            Assert.Empty(player2.Animals);
+            Assert.Equal(2, player1.Animals.First().FoodGot);
 
         }
 
