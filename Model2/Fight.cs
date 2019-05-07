@@ -7,7 +7,8 @@ namespace Model
 {
     public interface IFight
     {
-        void Start(Animal victim);
+        IAnimal Attacker { get; }
+        void Start(IAnimal victim);
         void Cancel();
         event DefenceChooseHandler DefenceChoose;
         event FightOverHandler FightOver;
@@ -16,25 +17,25 @@ namespace Model
 
     public class Fight : IFight
     {
-        private Animal _attacker;
-        private Animal _victim;
-        private Dictionary<Upgrade, bool> DefenceCardsUsed = new Dictionary<Upgrade, bool>();
+        private IAnimal _attacker;
+        private IAnimal _victim;
+        private Dictionary<Upgrade, bool> DefenceCardsNotUsed = new Dictionary<Upgrade, bool>();
         private List<IPlayer> _players;
 
-        public Animal Victim => _victim;
-        public Animal Attacker => _attacker;
+        public IAnimal Victim => _victim;
+        public IAnimal Attacker => _attacker;
         public event DefenceChooseHandler DefenceChoose;
         public event FightOverHandler FightOver;
 
 
-        public Fight(Animal attacker, List<IPlayer> players)
+        public Fight(IAnimal attacker, List<IPlayer> players)
         {
             _attacker = attacker;
             _players = players;
         }
 
 
-        public void Start(Animal victim)
+        public void Start(IAnimal victim)
         {
             _victim = victim;
             var defence = _victim.Upgrades.Where(x =>
@@ -43,11 +44,13 @@ namespace Model
 
             if (defence.Count > 0)
             {
-                DefenceCardsUsed = defence.ToDictionary(item => item, item => false);
-                DefenceChoose?.Invoke(this, new DefenceChooseEventArgs(this));
+                DefenceCardsNotUsed = defence.ToDictionary(item => item, item => true);
+                DefenceChoose?.Invoke(this, new DefenceChooseEventArgs(this, DefenceCardsNotUsed));
             }
             else
             {
+                if (victim.Upgrades.Any(x => x.UpgradeType == UpgradeType.Poisonous))
+                    Attacker.Poisoned = true;
                 FightOver?.Invoke(this, new FightOverEventArgs(this, true));
             }
         }
@@ -56,22 +59,7 @@ namespace Model
         {
         }
         
-
-
-
-//        private void TestOnAttackChoose(object sender, DefenceChooseEventArgs args)
-//        {
-//            var canUse = args.Fight.DefenceCardsUsed.Where(x => !x.Value);
-//            var toUse = canUse.First().Key;
-//
-//            switch (toUse.UpgradeType)
-//            {
-//                case UpgradeType.TailLoss:
-//                    (toUse as UpgradeTailLoss).Use();
-//                    break;
-//            }
-//        }
-
+        
     }
 
 
@@ -92,11 +80,13 @@ namespace Model
 
     public class DefenceChooseEventArgs : EventArgs
     {
-        public Fight Fight { get; private set; }
+        public Fight Fight { get; }
+        public Dictionary<Upgrade, bool> DefenceCardsNotUsed { get; }
 
-        public DefenceChooseEventArgs(Fight fight)
+        public DefenceChooseEventArgs(Fight fight, Dictionary<Upgrade, bool> defenceCardsNotUsed)
         {
             Fight = fight;
+            DefenceCardsNotUsed = defenceCardsNotUsed;
         }
     }
 

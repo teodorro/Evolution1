@@ -6,6 +6,8 @@ namespace Model.Upgrades
     {
         public event StartAttackEventHandler OnUse;
 
+        public bool WasUsedThisTurn { get; set; }
+
 
         public UpgradeCarnivorous()
         {

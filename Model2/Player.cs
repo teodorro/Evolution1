@@ -13,13 +13,18 @@ namespace Model
     }
 
 
-//    public delegate void DevelopingStoppedEventHandler(object sender, DevelopingStoppedEventArgs e);
-//
-//    public class DevelopingStoppedEventArgs : EventArgs
-//    {
-//        public IPlayer Player { get; }
-//        public DevelopingStoppedEventArgs(IPlayer player) => Player = player;
-//    }
+    public delegate void TryFeedAnimalEventHandler(object sender, TryFeedAnimalEventArgs e);
+
+    public class TryFeedAnimalEventArgs : EventArgs
+    {
+        public IPlayer Player { get; }
+        public IAnimal Animal { get; }
+        public TryFeedAnimalEventArgs(IPlayer player, IAnimal animal)
+        {
+            Player = player;
+            Animal = animal;
+        }
+    }
 
 
 
@@ -29,23 +34,26 @@ namespace Model
         AnimalCollection Animals { get; }
         string Name { get; }
 
+        event TryFeedAnimalEventHandler TryFeedAnimalEvent;
+
         void Reset();
 
         //-- development phase
 
         void AddCard(Card card);
         void AddAnimal(Card card);
-        void AddUpgrade(Animal animal, Card card, UpgradeSingle upgrade);
-        void AddUpgrade(Animal animalLeft, Card card, UpgradePair upgrade);
+        void AddUpgrade(IAnimal animal, Card card, UpgradeSingle upgrade);
+        void AddUpgrade(IAnimal animalLeft, Card card, UpgradePair upgrade);
 
         //-- eating phase
 
-        void Feed(Animal animal);
-//        void AttackAnimal(Animal carnivore, Animal victim);
-        void UseUpgrade(Animal animal, UpgradeSingle upgrade);
-        void AddParasite(IPlayer player, Animal animal, Card card);
+        void TryFeed(IAnimal animal);
+        void Feed(IAnimal animal);
+        //        void AttackAnimal(Animal carnivore, Animal victim);
+        void UseUpgrade(IAnimal animal, UpgradeSingle upgrade);
+        void AddParasite(IPlayer player, IAnimal animal, Card card);
 
-        void RemoveAnimal(Animal animal);
+        void RemoveAnimal(IAnimal animal);
     }
 
 
@@ -57,6 +65,7 @@ namespace Model
         public ReadOnlyCollection<Card> Cards => _cards.AsReadOnly();
         public AnimalCollection Animals { get; }
         public string Name { get; }
+        public event TryFeedAnimalEventHandler TryFeedAnimalEvent;
 
         public event EventHandler<EventArgs> DevelopingStopped;
 
@@ -83,17 +92,17 @@ namespace Model
             Animals.AddAnimal();
         }
 
-        public void RemoveAnimal(Animal animal)
+        public void RemoveAnimal(IAnimal animal)
         {
             Animals.RemoveAnimal(animal);
         }
 
-        public void ChangeOrder(Animal animal, int newPosition)
+        public void ChangeOrder(IAnimal animal, int newPosition)
         {
             Animals.SetNewPosition(animal, newPosition);
         }
 
-        public void AddUpgrade(Animal animal, Card card, UpgradeSingle upgrade)
+        public void AddUpgrade(IAnimal animal, Card card, UpgradeSingle upgrade)
         {
             if (card.Upgrade1 != upgrade && card.Upgrade2 != upgrade)
                 throw new CardUpgradeIncostintenceException();
@@ -101,7 +110,7 @@ namespace Model
             _cards.Remove(card);
         }
 
-        public void AddUpgrade(Animal animalLeft, Card card, UpgradePair upgrade)
+        public void AddUpgrade(IAnimal animalLeft, Card card, UpgradePair upgrade)
         {
             if (card.Upgrade1 != upgrade && card.Upgrade2 != upgrade)
                 throw new CardUpgradeIncostintenceException();
@@ -109,7 +118,7 @@ namespace Model
             _cards.Remove(card);
         }
 
-        public void AddParasite(IPlayer player, Animal animal, Card card)
+        public void AddParasite(IPlayer player, IAnimal animal, Card card)
         {
             if (player == null || animal == null || card == null)
                 throw new ArgumentNullException();
@@ -130,21 +139,31 @@ namespace Model
             Animals.Clear();
         }
 
-
-
-
-        public void Feed(Animal animal)
+        public void TryFeed(IAnimal animal)
         {
-            
-            throw new NotImplementedException();
+            if (animal == null)
+                throw new ArgumentNullException();
+            if (!Animals.Contains(animal))
+                throw new AnimalNotFoundException();
+            TryFeedAnimalEvent?.Invoke(this, new TryFeedAnimalEventArgs(this, animal));
         }
+
+        public void Feed(IAnimal animal)
+        {
+            if (animal == null)
+                throw new ArgumentNullException();
+            if (!Animals.Contains(animal))
+                throw new AnimalNotFoundException();
+            animal.AddFood(new FoodToken(true), null);
+        }
+
 
 //        public void AttackAnimal(Animal carnivore, Animal victim)
 //        {
 //            throw new NotImplementedException();
 //        }
 
-        public void UseUpgrade(Animal animal, UpgradeSingle upgrade)
+        public void UseUpgrade(IAnimal animal, UpgradeSingle upgrade)
         {
             throw new NotImplementedException();
         }

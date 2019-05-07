@@ -126,7 +126,7 @@ namespace TestModel.TestUpgrade
         {
             CreateAttackerAndVictim(out var attacker, out var victim);
             victim.AddUpgrade(new UpgradeBurrowing());
-            victim.AddFood(1);
+            victim.AddFood(new FoodToken(true));
 
             var check = AttackPossibilityChecker.Instance.CanAttack(attacker, victim);
 

@@ -9,5 +9,7 @@
         }
 
         public override int AdditionalFoodNeeded => 0;
+
+        public bool Full { get; set; } = false;
     }
 }

@@ -9,7 +9,7 @@ namespace Model
 
     public interface IAttackPossibilityChecker
     {
-        bool CanAttack(Animal attacker, Animal victim);
+        bool CanAttack(IAnimal attacker, IAnimal victim);
     }
 
 
@@ -25,7 +25,7 @@ namespace Model
             
         }
 
-        public bool CanAttack(Animal attacker, Animal victim)
+        public bool CanAttack(IAnimal attacker, IAnimal victim)
         {
             var swimming = CheckSwimming(attacker, victim);
             var burrowing = CheckBorrowing(attacker, victim);
@@ -40,7 +40,7 @@ namespace Model
                 && symbiosys;
         }
 
-        private bool CheckSymbiosys(Animal attacker, Animal victim)
+        private bool CheckSymbiosys(IAnimal attacker, IAnimal victim)
         {
             var symboExists = victim.Upgrades.Any(x => x.UpgradeType == UpgradeType.Symbiosys);
             if (symboExists)
@@ -49,7 +49,7 @@ namespace Model
             return true;
         }
 
-        private bool CheckHeavyweight(Animal attacker, Animal victim)
+        private bool CheckHeavyweight(IAnimal attacker, IAnimal victim)
         {
             var aHeavy = attacker.Upgrades.Any(x => x.UpgradeType == UpgradeType.HighBodyWeight);
             var vNotHeavy = victim.Upgrades.All(x => x.UpgradeType != UpgradeType.HighBodyWeight);
@@ -58,7 +58,7 @@ namespace Model
         }
 
 
-        private bool CheckCamouflage(Animal attacker, Animal victim)
+        private bool CheckCamouflage(IAnimal attacker, IAnimal victim)
         {
             var aSharp = attacker.Upgrades.Any(x => x.UpgradeType == UpgradeType.SharpVision);
             var vNotCamouflage = victim.Upgrades.All(x => x.UpgradeType != UpgradeType.Camouflage);
@@ -66,7 +66,7 @@ namespace Model
             return aSharp || vNotCamouflage;
         }
 
-        private bool CheckBorrowing(Animal attacker, Animal victim)
+        private bool CheckBorrowing(IAnimal attacker, IAnimal victim)
         {
             var vBorrowing = victim.Upgrades.Any(x => x.UpgradeType == UpgradeType.Burrowing);
             var fed = vBorrowing && victim.FoodGot == victim.FoodNeeded;
@@ -74,7 +74,7 @@ namespace Model
             return !fed;
         }
 
-        private bool CheckSwimming(Animal attacker, Animal victim)
+        private bool CheckSwimming(IAnimal attacker, IAnimal victim)
         {
             var bothSwim = attacker.Upgrades.Any(x => x.UpgradeType == UpgradeType.Swimming) &
                            victim.Upgrades.Any(x => x.UpgradeType == UpgradeType.Swimming);

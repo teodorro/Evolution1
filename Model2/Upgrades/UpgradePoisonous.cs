@@ -4,9 +4,11 @@
     {
         public UpgradePoisonous()
         {
-            UpgradeType = UpgradeType.Parasite;
+            UpgradeType = UpgradeType.Poisonous;
         }
 
         public override int AdditionalFoodNeeded => 0;
+
+
     }
 }

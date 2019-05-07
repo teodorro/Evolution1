@@ -156,13 +156,12 @@ namespace TestModel
         {
             var animal = UpgradeAnimal(GetAnimal(), new List<UpgradeType>() { UpgradeType.Carnivorous, UpgradeType.Camouflage, UpgradeType.Parasite });
 
-            Assert.Throws<ArgumentException>(() => animal.AddFood(3));
-            animal.AddFood(1);
-            animal.AddFood(2);
+            animal.AddFood(new FoodToken(true));
+            animal.AddFood(new FoodToken(true), new FoodToken(true));
             Assert.Equal(3, animal.FoodGot);
-            animal.AddFood(2);
+            animal.AddFood(new FoodToken(true), new FoodToken(true));
             Assert.Equal(4, animal.FoodGot);
-            Assert.Throws<AnimalAlreadyFedException>(() => animal.AddFood(1));
+            Assert.Throws<AnimalAlreadyFedException>(() => animal.AddFood(new FoodToken(true)));
         }
 
         [Fact]

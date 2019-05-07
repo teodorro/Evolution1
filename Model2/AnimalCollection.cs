@@ -9,34 +9,35 @@ namespace Model
 {
     public interface IAnimalCollection
     {
-        ReadOnlyCollection<Animal> Animals { get; }
+        ReadOnlyCollection<IAnimal> Animals { get; }
 
-        Animal AddAnimal();
-        void RemoveAnimal(Animal animal);
+        IAnimal AddAnimal();
+        void RemoveAnimal(IAnimal animal);
         void Clear();
 
-        bool CanBeUpgraded(Animal animal, UpgradeSingle upgrade);
-        void AddUpgrade(Animal animal, UpgradeSingle upgrade);
+        bool CanBeUpgraded(IAnimal animal, UpgradeSingle upgrade);
+        void AddUpgrade(IAnimal animal, UpgradeSingle upgrade);
 
-        bool CanBeUpgraded(Animal animalLeft, UpgradePair upgrade);
-        void AddUpgrade(Animal animalLeft, UpgradePair upgrade);
+        bool CanBeUpgraded(IAnimal animalLeft, UpgradePair upgrade);
+        void AddUpgrade(IAnimal animalLeft, UpgradePair upgrade);
 
-        void RemoveUpgrade(Animal animalLeft, UpgradePair upgrade);
+        void RemoveUpgrade(IAnimal animalLeft, UpgradePair upgrade);
 
-//        bool CanBeMovedToPosition(Animal animal, int position);
-        void SetNewPosition(Animal animal, int newPosition);
-        int GetPosition(Animal animal);
+        void SetNewPosition(IAnimal animal, int newPosition);
+        int GetPosition(IAnimal animal);
+
+        IEnumerable<IAnimal> AnimalsThatCanEat();
     }
 
 
 
-    public class AnimalCollection : IAnimalCollection, IReadOnlyCollection<Animal>
+    public class AnimalCollection : IAnimalCollection, IReadOnlyCollection<IAnimal>
     {
-        private readonly List<Animal> _animals = new List<Animal>();
-        public ReadOnlyCollection<Animal> Animals => _animals.AsReadOnly();
+        private readonly List<IAnimal> _animals = new List<IAnimal>();
+        public ReadOnlyCollection<IAnimal> Animals => _animals.AsReadOnly();
         private IPlayer _player;
-        private Animal NextAnimal(Animal animal) => _animals[_animals.IndexOf(animal) + 1];
-        private Animal PreviousAnimal(Animal animal) => _animals[_animals.IndexOf(animal) - 1];
+        private Animal NextAnimal(IAnimal animal) => _animals[_animals.IndexOf(animal) + 1] as Animal;
+        private Animal PreviousAnimal(IAnimal animal) => _animals[_animals.IndexOf(animal) - 1] as Animal;
 
 
         public AnimalCollection(IPlayer player)
@@ -45,14 +46,14 @@ namespace Model
         }
 
 
-        public Animal AddAnimal()
+        public IAnimal AddAnimal()
         {
             var animal = new Animal(_player);
             _animals.Add(animal);
             return animal;
         }
 
-        public void RemoveAnimal(Animal animal)
+        public void RemoveAnimal(IAnimal animal)
         {
             if (animal.Upgrades.Any(x => x.GetType().IsSubclassOf(typeof(UpgradePair))))
             {
@@ -64,7 +65,7 @@ namespace Model
                         NextAnimal(animal).RemoveUpgrade(u);
                     else if (u.RightAnimal == animal)
                         PreviousAnimal(animal).RemoveUpgrade(u);
-                    animal.RemoveUpgrade(u);
+                    (animal as Animal).RemoveUpgrade(u);
                 }
             }
             if (_animals.Contains(animal))
@@ -74,7 +75,7 @@ namespace Model
         public void Clear() => _animals.Clear();
 
 
-        public bool CanBeUpgraded(Animal animal, UpgradeSingle upgrade)
+        public bool CanBeUpgraded(IAnimal animal, UpgradeSingle upgrade)
         {
             if (_animals.Contains(animal))
                 return animal.CanBeUpgraded(upgrade);
@@ -82,16 +83,17 @@ namespace Model
                 throw new AnimalNotFoundException();
         }
 
-        public bool CanBeUpgraded(Animal animalLeft, UpgradePair upgrade)
+        public bool CanBeUpgraded(IAnimal animalLeft, UpgradePair upgrade)
         {
             var i1 = GetPosition(animalLeft);
             if (i1 == Count - 1)
                 return false;
             var animalRight = _animals[i1 + 1];
-            return animalLeft.CanBeUpgraded(upgrade, true) && animalRight.CanBeUpgraded(upgrade, false);
+            return (animalLeft as Animal).CanBeUpgraded(upgrade, true) && 
+                   (animalRight as Animal).CanBeUpgraded(upgrade, false);
         }
 
-        public void AddUpgrade(Animal animal, UpgradeSingle upgrade)
+        public void AddUpgrade(IAnimal animal, UpgradeSingle upgrade)
         {
             if (_animals.Contains(animal))
                 animal.AddUpgrade(upgrade);
@@ -99,27 +101,27 @@ namespace Model
                 throw new AnimalNotFoundException();
         }
 
-        public void AddUpgrade(Animal animalLeft, UpgradePair upgrade)
+        public void AddUpgrade(IAnimal animalLeft, UpgradePair upgrade)
         {
             if (CanBeUpgraded(animalLeft, upgrade))
             {
-                animalLeft.AddUpgrade(upgrade, true);
+                (animalLeft as Animal).AddUpgrade(upgrade, true);
                 NextAnimal(animalLeft).AddUpgrade(upgrade, false);
             }
             else
                 throw new UpgradesIncompatibleException();
         }
 
-        public void RemoveUpgrade(Animal animalLeft, UpgradePair upgrade)
+        public void RemoveUpgrade(IAnimal animalLeft, UpgradePair upgrade)
         {
             if (animalLeft == null || upgrade == null)
                 throw new ArgumentNullException();
 
-            animalLeft.RemoveUpgrade(upgrade);
+            (animalLeft as Animal).RemoveUpgrade(upgrade);
             NextAnimal(animalLeft).RemoveUpgrade(upgrade);
         }
 
-        public void SetNewPosition(Animal animal, int newPosition)
+        public void SetNewPosition(IAnimal animal, int newPosition)
         {
             if (animal == null)
                 throw new ArgumentNullException();
@@ -173,7 +175,7 @@ namespace Model
             ConvertChainsToAnimals(chains);
         }
 
-        private void InvertUpgradesLeftRight(List<Animal> animals)
+        private void InvertUpgradesLeftRight(List<IAnimal> animals)
         {
             var pairUpgradesWithDups = animals.SelectMany(a => a.Upgrades)
                 .Where(u => u.GetType().IsSubclassOf(typeof(UpgradePair)));
@@ -190,9 +192,9 @@ namespace Model
             }
         }
 
-        private List<Animal> InvertAnimalsPositions(ChainOfAnimals curChain)
+        private List<IAnimal> InvertAnimalsPositions(ChainOfAnimals curChain)
         {
-            var animals = new List<Animal>();
+            var animals = new List<IAnimal>();
             for (int i = curChain.Animals.Count - 1; i >= 0; i--)
                 animals.Add(curChain.Animals[i]);
             return animals;
@@ -223,7 +225,7 @@ namespace Model
                     if (!next)
                         break;
                 }
-                chains.Add(new ChainOfAnimals(i, new List<Animal>()));
+                chains.Add(new ChainOfAnimals(i, new List<IAnimal>()));
                 for (int k = i; k < j; k++)
                     chains.Last().Animals.Add(_animals[k]);
             }
@@ -240,7 +242,7 @@ namespace Model
         }
 
 
-        public int GetPosition(Animal animal)
+        public int GetPosition(IAnimal animal)
         {
             if (animal == null)
                 throw new ArgumentNullException();
@@ -249,8 +251,22 @@ namespace Model
             return _animals.IndexOf(animal);
         }
 
+        public IEnumerable<IAnimal> AnimalsThatCanEat()
+        {
+            var animals = new List<IAnimal>();
+            foreach (var animal in _animals)
+            {
+                if (animal.FoodNeeded - animal.FoodGot > 0)
+                    animals.Add(animal);
+                else if (!animal.NoFreeFat())
+                    animals.Add(animal);
+            }
 
-        public IEnumerator<Animal> GetEnumerator()
+            return animals;
+        }
+        
+
+        public IEnumerator<IAnimal> GetEnumerator()
         {
             return _animals.GetEnumerator();
         }
@@ -267,14 +283,14 @@ namespace Model
 
     internal class ChainOfAnimals
     {
-        public List<Animal> Animals { get; set; }
+        public List<IAnimal> Animals { get; set; }
 
         public double Middle => Start + ((double)Animals.Count) / 2;
         public int Start { get; }
         public int Length => Animals.Count;
         public int End => Start + Animals.Count;
 
-        public ChainOfAnimals(int start, IEnumerable<Animal> animals)
+        public ChainOfAnimals(int start, IEnumerable<IAnimal> animals)
         {
             Animals = animals.ToList();
             Start = start;

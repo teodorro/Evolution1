@@ -12,7 +12,7 @@ namespace TestModel
         private static AnimalCollection GetAnimals() => new AnimalCollection(new Player("noname"));
         private static Animal GetAnimal() => new Animal(new Player("noname"));
 
-        private static AnimalCollection GetThreeAnimals(out Animal a1, out Animal a2, out Animal a3)
+        private static AnimalCollection GetThreeAnimals(out IAnimal a1, out IAnimal a2, out IAnimal a3)
         {
             var animals = GetAnimals();
             a1 = animals.AddAnimal();
@@ -21,8 +21,8 @@ namespace TestModel
             return animals;
         }
 
-        private static AnimalCollection GetEightAnimals(out Animal a1, out Animal a2, out Animal a3, out Animal a4, 
-            out Animal a5, out Animal a6, out Animal a7, out Animal a8)
+        private static AnimalCollection GetEightAnimals(out IAnimal a1, out IAnimal a2, out IAnimal a3, out IAnimal a4, 
+            out IAnimal a5, out IAnimal a6, out IAnimal a7, out IAnimal a8)
         {
             var animals = GetAnimals();
             a1 = animals.AddAnimal();

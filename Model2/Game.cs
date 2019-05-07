@@ -44,7 +44,7 @@ namespace Model
             if (fightOverEventArgs.Killed)
             {
                 fightOverEventArgs.Fight.Victim.Player.RemoveAnimal(fightOverEventArgs.Fight.Victim);
-                fightOverEventArgs.Fight.Attacker.AddFood(2);
+                fightOverEventArgs.Fight.Attacker.AddFood(new FoodToken(false), new FoodToken(false));
             }
         }
 

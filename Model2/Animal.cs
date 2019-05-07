@@ -11,12 +11,16 @@ namespace Model
         ReadOnlyCollection<Upgrade> Upgrades { get; }
         int FoodNeeded { get; }
         int FoodGot { get; }
+
         IPlayer Player { get; }
-        
+        bool Poisoned { get; set; }
+        bool CanAttack { get; }
+
         bool CanBeUpgraded(UpgradeSingle upgrade);
         void AddUpgrade(UpgradeSingle upgrade);
         void RemoveUpgrade(UpgradeSingle upgrade);
-        void AddFood(int foodPoints);
+        void AddFood(FoodToken foodToken, FoodToken foodToken2);
+        bool NoFreeFat();
     }
 
 
@@ -28,6 +32,9 @@ namespace Model
         public int FoodNeeded => 1 + Upgrades.Select(x => x.AdditionalFoodNeeded).Sum();
         public int FoodGot { get; private set; } = 0;
         public IPlayer Player { get; }
+        public bool Poisoned { get; set; } = false;
+
+        public bool CanAttack => _upgrades.Any(x => x.UpgradeType == UpgradeType.Carnivorous);
 
 
         public Animal(IPlayer player)
@@ -44,17 +51,23 @@ namespace Model
                 _upgrades.Remove(upgrade);
         }
 
-        public void AddFood(int foodPoints)
+        public void AddFood(FoodToken foodToken, FoodToken foodToken2 = null)
         {
-            if (foodPoints > 2 || foodPoints < 0)
-                throw new ArgumentException("impossible food points");
+            if (foodToken == null)
+                throw new ArgumentNullException();
             if (FoodGot == FoodNeeded)
                 throw new AnimalAlreadyFedException();
-            FoodGot += foodPoints;
-            if (FoodGot > FoodNeeded)
-                FoodGot = FoodNeeded;
+            FoodGot += 1;
+            if (foodToken2 != null)
+            {
+                if (FoodGot < FoodNeeded)
+                    FoodGot += 1;
+                else if (!NoFreeFat())
+                    (_upgrades.First(x => x.UpgradeType == UpgradeType.Fat && !(x as UpgradeFat).Full) as UpgradeFat)
+                        .Full = true;
+            }
         }
-        
+
         public bool CanBeUpgraded(UpgradeSingle upgrade)
         {
             if (upgrade == null)
@@ -73,6 +86,11 @@ namespace Model
                 default:
                     return _upgrades.All(x => x.GetType() != upgrade.GetType());
             }
+        }
+
+        public void Attack()
+        {
+            (_upgrades.First(x => x.UpgradeType == UpgradeType.Carnivorous) as UpgradeCarnivorous)?.Use();
         }
 
         public void AddUpgrade(UpgradeSingle upgrade)
@@ -122,6 +140,12 @@ namespace Model
                 _upgrades.Remove(upgrade);
         }
 
+        public bool NoFreeFat()
+        {
+            if (_upgrades.Any(x => x.UpgradeType == UpgradeType.Fat))
+                return _upgrades.Where(x => x.UpgradeType == UpgradeType.Fat).All(y => ((UpgradeFat)y).Full);
+            return true;
+        }
 
     }
     
