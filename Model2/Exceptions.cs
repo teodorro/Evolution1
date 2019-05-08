@@ -12,7 +12,7 @@ namespace Model
     public class AnimalNotFoundException : Exception { }
     public class NoParasiteToYourAnimalsException : Exception { }
     public class AnimalAlreadyFedException : Exception { }
-
+    public class UpgradeWasAlreadyUsedThisTurnException : Exception { }
 
 
 

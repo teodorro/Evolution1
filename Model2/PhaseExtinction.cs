@@ -25,9 +25,9 @@ namespace Model
 
         private bool Starve(IAnimal animal)
         {
-            if (animal.FoodNeeded - animal.FoodGot == 0)
+            if (!animal.Hungry)
                 return false;
-            if (animal.NoFreeFat())
+            if (animal.NoFreeFat)
                 return true;
             var fatCards = animal.Upgrades.Where(x => x.UpgradeType == UpgradeType.Fat);
             var fullFatCards = fatCards.Where(x => (x as UpgradeFat).Full);
@@ -39,7 +39,7 @@ namespace Model
             {
                 (fullFatCards.First(x => (x as UpgradeFat).Full) as UpgradeFat).Full = false;
                 animal.AddFood(new FoodToken(false), null);
-                if (animal.FoodNeeded - animal.FoodGot == 0)
+                if (!animal.Hungry)
                     return false;
             }
 

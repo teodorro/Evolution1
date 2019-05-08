@@ -11,6 +11,9 @@ namespace Model
         ReadOnlyCollection<Upgrade> Upgrades { get; }
         int FoodNeeded { get; }
         int FoodGot { get; }
+        bool Hungry { get; }
+        bool NoFreeFat { get; }
+        bool CanEat { get; }
 
         IPlayer Player { get; }
         bool Poisoned { get; set; }
@@ -20,7 +23,6 @@ namespace Model
         void AddUpgrade(UpgradeSingle upgrade);
         void RemoveUpgrade(UpgradeSingle upgrade);
         void AddFood(FoodToken foodToken, FoodToken foodToken2);
-        bool NoFreeFat();
     }
 
 
@@ -31,11 +33,14 @@ namespace Model
         public ReadOnlyCollection<Upgrade> Upgrades => _upgrades.AsReadOnly();
         public int FoodNeeded => 1 + Upgrades.Select(x => x.AdditionalFoodNeeded).Sum();
         public int FoodGot { get; private set; } = 0;
+        public bool Hungry => FoodNeeded - FoodGot > 0;
         public IPlayer Player { get; }
         public bool Poisoned { get; set; } = false;
 
         public bool CanAttack => _upgrades.Any(x => x.UpgradeType == UpgradeType.Carnivorous);
 
+        public bool NoFreeFat => _upgrades.All(x => x.UpgradeType != UpgradeType.Fat) || _upgrades.Where(x => x.UpgradeType == UpgradeType.Fat).All(y => ((UpgradeFat)y).Full);
+        public bool CanEat => Hungry || _upgrades.Any(x => x.UpgradeType == UpgradeType.Fat && !(x as UpgradeFat).Full);
 
         public Animal(IPlayer player)
         {
@@ -55,14 +60,14 @@ namespace Model
         {
             if (foodToken == null)
                 throw new ArgumentNullException();
-            if (FoodGot == FoodNeeded)
+            if (!Hungry)
                 throw new AnimalAlreadyFedException();
             FoodGot += 1;
             if (foodToken2 != null)
             {
                 if (FoodGot < FoodNeeded)
                     FoodGot += 1;
-                else if (!NoFreeFat())
+                else if (CanEat)
                     (_upgrades.First(x => x.UpgradeType == UpgradeType.Fat && !(x as UpgradeFat).Full) as UpgradeFat)
                         .Full = true;
             }
@@ -138,13 +143,6 @@ namespace Model
         {
             if (_upgrades.Contains(upgrade))
                 _upgrades.Remove(upgrade);
-        }
-
-        public bool NoFreeFat()
-        {
-            if (_upgrades.Any(x => x.UpgradeType == UpgradeType.Fat))
-                return _upgrades.Where(x => x.UpgradeType == UpgradeType.Fat).All(y => ((UpgradeFat)y).Full);
-            return true;
         }
 
     }

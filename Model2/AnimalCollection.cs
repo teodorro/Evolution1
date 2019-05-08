@@ -256,9 +256,9 @@ namespace Model
             var animals = new List<IAnimal>();
             foreach (var animal in _animals)
             {
-                if (animal.FoodNeeded - animal.FoodGot > 0)
+                if (animal.Hungry)
                     animals.Add(animal);
-                else if (!animal.NoFreeFat())
+                else if (!animal.NoFreeFat)
                     animals.Add(animal);
             }
 

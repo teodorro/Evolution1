@@ -69,7 +69,7 @@ namespace Model
         private bool CheckBorrowing(IAnimal attacker, IAnimal victim)
         {
             var vBorrowing = victim.Upgrades.Any(x => x.UpgradeType == UpgradeType.Burrowing);
-            var fed = vBorrowing && victim.FoodGot == victim.FoodNeeded;
+            var fed = vBorrowing && !victim.Hungry;
 
             return !fed;
         }

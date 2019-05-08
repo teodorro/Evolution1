@@ -18,7 +18,10 @@ namespace Model.Upgrades
 
         public void Use()
         {
+            if (WasUsedThisTurn)
+                throw new UpgradeWasAlreadyUsedThisTurnException();
             OnUse?.Invoke(this, new StartAttackEventArgs(Animal));
+            WasUsedThisTurn = true;
         }
 
     }

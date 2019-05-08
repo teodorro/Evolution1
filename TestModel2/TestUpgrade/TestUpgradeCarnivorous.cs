@@ -52,12 +52,10 @@ namespace TestModel.TestUpgrade
             game.VictimChoose += OnVictimChoose;
 
             (player1.Animals.First().Upgrades.First(x => x.UpgradeType == UpgradeType.Carnivorous) as UpgradeCarnivorous).Use();
-
             _victim = player2.Animals.First();
-            (player1.Animals.First().Upgrades.First(x => x.UpgradeType == UpgradeType.Carnivorous) as UpgradeCarnivorous).Use();
 
-            Assert.Empty(player2.Animals);
-            Assert.Equal(2, player1.Animals.First().FoodGot);
+            Assert.Throws<UpgradeWasAlreadyUsedThisTurnException>(
+                () => (player1.Animals.First().Upgrades.First(x => x.UpgradeType == UpgradeType.Carnivorous) as UpgradeCarnivorous).Use());
 
         }
 

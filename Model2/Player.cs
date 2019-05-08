@@ -145,6 +145,8 @@ namespace Model
                 throw new ArgumentNullException();
             if (!Animals.Contains(animal))
                 throw new AnimalNotFoundException();
+            if (!animal.CanEat)
+                throw new AnimalAlreadyFedException();
             TryFeedAnimalEvent?.Invoke(this, new TryFeedAnimalEventArgs(this, animal));
         }
 
@@ -154,7 +156,12 @@ namespace Model
                 throw new ArgumentNullException();
             if (!Animals.Contains(animal))
                 throw new AnimalNotFoundException();
-            animal.AddFood(new FoodToken(true), null);
+            if (animal.Hungry)
+                animal.AddFood(new FoodToken(true), null);
+            else if (animal.CanEat)
+                ((UpgradeFat) animal.Upgrades.First(x => x.UpgradeType == UpgradeType.Fat)).Full = true;
+            else
+                throw new AnimalAlreadyFedException();
         }
 
 
